@@ -1,1 +1,5 @@
-
+[
+  { "codigo": "RED100", "premio": "🎉 Ganaste 100 fichas", "usado": false },
+  { "codigo": "RED200", "premio": "🎉 Ganaste 200 fichas", "usado": false },
+  { "codigo": "REDX", "premio": "❌ Sin premio", "usado": false }
+]

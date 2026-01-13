@@ -99,26 +99,28 @@ button:disabled{
   <h1>RED-B CASINO</h1>
   <div class="sub">SORTEO VIP · CÓDIGOS ÚNICOS</div>
 
-  <input id="codigo" placeholder="INGRESÁ TU CÓDIGO" autocomplete="off">
+  <input
+    id="codigo"
+    placeholder="INGRESÁ TU CÓDIGO"
+    autocomplete="off"
+    oninput="chequearCodigo()"
+  >
+
   <button id="btn" onclick="verificarCodigo()">PROBAR SUERTE</button>
 
   <div id="resultado"></div>
 </div>
 
 <script>
-// ===== STORAGE GLOBAL =====
-const STORAGE_KEY = "redb_estado";
-
-function getEstado(){
-  return JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+// ===== STORAGE POR CODIGO =====
+function getUsados(){
+  return JSON.parse(localStorage.getItem("codigos_usados") || "{}");
 }
 
-function setEstado(codigo){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    codigo,
-    fecha: new Date().toISOString(),
-    bloqueado: true
-  }));
+function guardarUsado(codigo){
+  const usados = getUsados();
+  usados[codigo] = new Date().toISOString();
+  localStorage.setItem("codigos_usados", JSON.stringify(usados));
 }
 
 function formatoFecha(iso){
@@ -128,16 +130,23 @@ function formatoFecha(iso){
     f.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
 }
 
-// ===== BLOQUEO AL CARGAR =====
-window.onload = () => {
-  const estado = getEstado();
-  if(estado && estado.bloqueado){
-    document.getElementById("btn").disabled = true;
-    document.getElementById("resultado").innerText =
+// ===== CHEQUEO SOLO AL ESCRIBIR =====
+function chequearCodigo(){
+  const codigo = document.getElementById("codigo").value.trim().toUpperCase();
+  const usados = getUsados();
+  const btn = document.getElementById("btn");
+  const resultado = document.getElementById("resultado");
+
+  if(usados[codigo]){
+    btn.disabled = true;
+    resultado.innerText =
       "⚠️ Este código ya fue utilizado en este dispositivo el " +
-      formatoFecha(estado.fecha);
+      formatoFecha(usados[codigo]);
+  }else{
+    btn.disabled = false;
+    resultado.innerText = "";
   }
-};
+}
 
 // ===== VERIFICACION =====
 async function verificarCodigo(){
@@ -150,12 +159,12 @@ async function verificarCodigo(){
     return;
   }
 
-  const estado = getEstado();
-  if(estado && estado.bloqueado){
+  const usados = getUsados();
+  if(usados[codigo]){
     btn.disabled = true;
     resultado.innerText =
       "⚠️ Este código ya fue utilizado en este dispositivo el " +
-      formatoFecha(estado.fecha);
+      formatoFecha(usados[codigo]);
     return;
   }
 
@@ -171,7 +180,7 @@ async function verificarCodigo(){
     const data = await res.json();
 
     if(data.valido){
-      setEstado(codigo);
+      guardarUsado(codigo);
       btn.disabled = true;
     }
 

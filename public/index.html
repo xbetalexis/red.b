@@ -112,7 +112,7 @@ button:disabled{
 </div>
 
 <script>
-// ===== STORAGE POR CODIGO =====
+// ===== STORAGE =====
 function getUsados(){
   return JSON.parse(localStorage.getItem("codigos_usados") || "{}");
 }
@@ -130,7 +130,7 @@ function formatoFecha(iso){
     f.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
 }
 
-// ===== CHEQUEO SOLO AL ESCRIBIR =====
+// ===== CHEQUEO VISUAL =====
 function chequearCodigo(){
   const codigo = document.getElementById("codigo").value.trim().toUpperCase();
   const usados = getUsados();
@@ -148,7 +148,7 @@ function chequearCodigo(){
   }
 }
 
-// ===== VERIFICACION =====
+// ===== VERIFICACION (CIERRE TOTAL) =====
 async function verificarCodigo(){
   const codigo = document.getElementById("codigo").value.trim().toUpperCase();
   const resultado = document.getElementById("resultado");
@@ -159,6 +159,7 @@ async function verificarCodigo(){
     return;
   }
 
+  // 🔒 BLOQUEO DEFINITIVO ANTES DE LA API
   const usados = getUsados();
   if(usados[codigo]){
     btn.disabled = true;
@@ -180,7 +181,7 @@ async function verificarCodigo(){
     const data = await res.json();
 
     if(data.valido){
-      guardarUsado(codigo);
+      guardarUsado(codigo); // 👈 SE GUARDA SIEMPRE
       btn.disabled = true;
     }
 

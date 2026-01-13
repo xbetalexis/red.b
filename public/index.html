@@ -6,66 +6,117 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+*{box-sizing:border-box;margin:0;padding:0}
+
 body{
-  background:#0b0b0b;
+  background:radial-gradient(circle at top,#1b0000,#000 70%);
   color:#fff;
-  font-family:Arial, sans-serif;
+  font-family:Arial, Helvetica, sans-serif;
   display:flex;
   align-items:center;
   justify-content:center;
   height:100vh;
 }
+
 .box{
-  background:#111;
+  background:rgba(0,0,0,0.75);
   padding:30px;
-  border-radius:12px;
+  border-radius:16px;
   width:100%;
   max-width:380px;
   text-align:center;
+  box-shadow:0 0 25px rgba(255,0,0,0.35);
 }
+
+h2{
+  margin-bottom:20px;
+  color:#ff2b2b;
+  letter-spacing:1px;
+}
+
 input{
   width:100%;
-  padding:12px;
+  padding:14px;
   margin:15px 0;
-  border-radius:8px;
+  border-radius:10px;
   border:none;
+  outline:none;
+  font-size:16px;
+  text-align:center;
 }
+
 button{
   width:100%;
-  padding:14px;
-  background:#d10000;
+  padding:15px;
+  background:linear-gradient(180deg,#ff2b2b,#a80000);
   color:#fff;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   font-size:18px;
+  font-weight:bold;
   cursor:pointer;
+  box-shadow:0 0 15px rgba(255,0,0,0.6);
 }
-#resultado{margin-top:20px;font-size:18px}
+
+button:active{
+  transform:scale(0.97);
+}
+
+#resultado{
+  margin-top:22px;
+  font-size:18px;
+  min-height:24px;
+}
 </style>
 </head>
 
 <body>
+
 <div class="box">
   <h2>🎁 SORTEO RED-B</h2>
-  <input id="codigo" placeholder="Ingresá tu código">
-  <button onclick="verificar()">PROBAR SUERTE</button>
+
+  <input
+    id="codigo"
+    type="text"
+    placeholder="Ingresá tu código"
+    autocomplete="off"
+  >
+
+  <button onclick="verificarCodigo()">PROBAR SUERTE</button>
+
   <div id="resultado"></div>
 </div>
 
 <script>
-async function verificar(){
-  const codigo = document.getElementById("codigo").value.trim();
-  if(!codigo) return;
+async function verificarCodigo(){
+  const input = document.getElementById("codigo");
+  const resultado = document.getElementById("resultado");
+  const codigo = input.value.trim();
 
-  const res = await fetch("/api/verificar-codigo",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ codigo })
-  });
+  if(!codigo){
+    resultado.innerText = "⚠️ Ingresá un código";
+    return;
+  }
 
-  const data = await res.json();
-  document.getElementById("resultado").innerText = data.mensaje;
+  resultado.innerText = "⏳ Verificando...";
+
+  try{
+    const res = await fetch("/api/verificar-codigo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ codigo })
+    });
+
+    const data = await res.json();
+    resultado.innerText = data.mensaje;
+
+  }catch(e){
+    resultado.innerText = "❌ Error de conexión";
+  }
 }
 </script>
+
 </body>
 </html>

@@ -1,95 +1,98 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RED-B CASINO</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RED-B CASINO</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
 
-<style>
-body{
-  background:radial-gradient(circle at top,#2a0000,#000 65%);
-  font-family:'Orbitron',sans-serif;
-  color:white;
-  margin:0;
-  padding:0;
-  text-align:center;
-}
+  <style>
+    body {
+      background: url("f1ec4f7e-3b11-414c-bb1c-3db302c97c66.jpg") no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Orbitron', sans-serif;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
 
-h1{
-  font-size:38px;
-  color:#ff0000;
-  margin-top:25px;
-  text-shadow:
-    0 0 5px #fff,
-    0 0 15px #ff0000,
-    0 0 30px #ff0000;
-  animation:latido 1.3s infinite;
-}
+    h1 {
+      font-size: 38px;
+      color: #ff0000;
+      text-shadow:
+        0 0 5px #fff,
+        0 0 15px #ff0000,
+        0 0 25px #ff0000;
+      margin-top: 20px;
+      animation: latido 1.3s infinite;
+    }
 
-@keyframes latido{
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.07)}
-}
+    @keyframes latido {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.07); }
+    }
 
-#contenedor{
-  margin:140px auto 40px;
-  max-width:420px;
-  padding:30px;
-  border-radius:20px;
-  background:rgba(0,0,0,0.5);
-  box-shadow:0 0 25px #000;
-}
+    #contenedor {
+      margin: 180px auto 40px;
+      max-width: 400px;
+      padding: 30px;
+      border-radius: 20px;
+      border: 3px solid #000;
+      background-color: rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 20px #000;
+    }
 
-input{
-  padding:12px;
-  width:85%;
-  font-size:16px;
-  border-radius:10px;
-  border:none;
-  text-align:center;
-}
+    input {
+      padding: 10px;
+      width: 80%;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid #000;
+      text-align: center;
+    }
 
-button{
-  margin-top:20px;
-  padding:14px 28px;
-  font-size:18px;
-  background:#ff2b2b;
-  border:none;
-  border-radius:100px;
-  cursor:pointer;
-  color:#fff;
-  box-shadow:0 0 15px #000;
-}
+    button {
+      margin-top: 20px;
+      padding: 14px 28px;
+      font-size: 18px;
+      background-color: #00ccff;
+      border: none;
+      color: black;
+      border-radius: 100px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+    }
 
-button:disabled{
-  background:#444;
-  cursor:not-allowed;
-}
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
 
-#resultado{
-  margin-top:20px;
-  font-size:18px;
-  min-height:30px;
-}
+    #resultado {
+      margin-top: 20px;
+      font-size: 20px;
+      min-height: 24px;
+    }
 
-.resultado-exito{color:#00ff55}
-.resultado-sinpremio{color:#ff3b3b}
-.resultado-aviso{color:#ffaa00}
-.resultado-error{color:#ff0000}
+    .resultado-exito { color:#00ff55 }
+    .resultado-sinpremio { color:#ff3b3b }
+    .resultado-aviso { color:#ffaa00 }
+    .resultado-error { color:#ff0000 }
 
-#botonRecargar{
-  display:none;
-  margin-top:25px;
-  padding:10px 22px;
-  background:#222;
-  color:#ff2b2b;
-  border:2px solid #ff2b2b;
-  border-radius:30px;
-  cursor:pointer;
-}
-</style>
+    #botonRecargar {
+      margin-top: 30px;
+      padding: 10px 22px;
+      font-size: 16px;
+      background-color: #222;
+      color: #00ccff;
+      border: 2px solid #00ccff;
+      border-radius: 30px;
+      cursor: pointer;
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -97,9 +100,9 @@ button:disabled{
 <h1>RED-B CASINO</h1>
 
 <div id="contenedor">
-  <input id="codigo" placeholder="Ingresá tu código"/>
-  <br>
-  <button id="botonTirar" onclick="tirar()">🎰 PROBAR SUERTE</button>
+  <input type="text" id="codigo" placeholder="Ingresá tu código"/>
+  <br/>
+  <button id="botonTirar" onclick="tirar()">🎰 Probar suerte</button>
 
   <div id="resultado"></div>
 
@@ -109,90 +112,82 @@ button:disabled{
 </div>
 
 <script>
-// ====== STORAGE CORRECTO (EL QUE FUNCIONABA) ======
-const usados = JSON.parse(localStorage.getItem("usados") || "{}");
+  const usados = JSON.parse(localStorage.getItem('usados') || '{}');
 
-function setFirstUse(codigo){
-  const key = `firstUsed_${codigo}`;
-  if(!localStorage.getItem(key)){
-    localStorage.setItem(key,new Date().toISOString());
-  }
-}
-
-function getFirstUse(codigo){
-  return localStorage.getItem(`firstUsed_${codigo}`);
-}
-
-function formatFecha(iso){
-  const d = new Date(iso);
-  const pad = n => String(n).padStart(2,"0");
-  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-// ====== FUNCION CLAVE ======
-function tirar(){
-  const codigoInput = document.getElementById("codigo");
-  const boton = document.getElementById("botonTirar");
-  const resultado = document.getElementById("resultado");
-  const botonRecargar = document.getElementById("botonRecargar");
-  const codigo = codigoInput.value.trim();
-
-  if(!codigo){
-    resultado.className="resultado-aviso";
-    resultado.innerText="⚠️ Ingresá un código.";
-    return;
+  function setFirstUse(codigo) {
+    const key = `firstUsed_${codigo}`;
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, new Date().toISOString());
+    }
   }
 
-  // 🔒 BLOQUEO REAL (ANTES DE LA API)
-  if(usados[codigo]){
-    const first = getFirstUse(codigo);
-    resultado.className="resultado-aviso";
-    resultado.innerHTML =
-      `🚫 Ya usaste este código en este dispositivo.<br>` +
-      `🕒 Primera vez: <b>${formatFecha(first)}</b>`;
-    boton.disabled=true;
-    return;
+  function getFirstUse(codigo) {
+    return localStorage.getItem(`firstUsed_${codigo}`);
   }
 
-  fetch("/api/verificar-codigo",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ codigo })
-  })
-  .then(r=>r.json())
-  .then(data=>{
-    if(data.estado==="valido"){
-      const msg = (data.mensaje||"").toLowerCase();
-      if(msg.includes("sin premio")){
-        resultado.className="resultado-sinpremio";
-        resultado.innerText="❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA";
-      }else{
-        resultado.className="resultado-exito";
-        resultado.innerText="✅ "+data.mensaje;
-      }
-      usados[codigo]=true;
-      localStorage.setItem("usados",JSON.stringify(usados));
-      setFirstUse(codigo);
+  function formatFecha(iso) {
+    const d = new Date(iso);
+    const pad = n => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
 
-    }else if(data.estado==="usado"){
-      resultado.className="resultado-aviso";
-      resultado.innerText="🚫 Este código ya fue utilizado.";
-    }else{
-      resultado.className="resultado-error";
-      resultado.innerText="❌ Código inválido.";
+  function tirar() {
+    const codigoInput = document.getElementById("codigo");
+    const boton = document.getElementById("botonTirar");
+    const resultado = document.getElementById("resultado");
+    const botonRecargar = document.getElementById("botonRecargar");
+    const codigo = codigoInput.value.trim();
+
+    if (!codigo) {
+      resultado.className = "resultado-aviso";
+      resultado.innerText = "⚠️ Ingresá un código.";
+      return;
     }
 
-    codigoInput.disabled=true;
-    boton.disabled=true;
-    botonRecargar.style.display="inline-block";
-  })
-  .catch(()=>{
-    resultado.className="resultado-error";
-    resultado.innerText="❌ Error al verificar.";
-    boton.disabled=true;
-    botonRecargar.style.display="inline-block";
-  });
-}
+    if (usados[codigo]) {
+      const first = getFirstUse(codigo);
+      resultado.className = "resultado-aviso";
+      resultado.innerHTML =
+        `🚫 Ya usaste este código en este dispositivo.<br>` +
+        `🕒 Primera vez: <b>${formatFecha(first)}</b>`;
+      boton.disabled = true;
+      botonRecargar.style.display = "inline-block";
+      return;
+    }
+
+    fetch('/api/verificar-codigo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ codigo })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.estado === "valido") {
+        if ((data.mensaje || "").toLowerCase().includes("sin premio")) {
+          resultado.className = "resultado-sinpremio";
+          resultado.innerText = "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA";
+        } else {
+          resultado.className = "resultado-exito";
+          resultado.innerText = "✅ " + data.mensaje;
+        }
+        usados[codigo] = true;
+        localStorage.setItem("usados", JSON.stringify(usados));
+        setFirstUse(codigo);
+
+      } else {
+        resultado.className = "resultado-error";
+        resultado.innerText = "❌ Código inválido.";
+      }
+
+      codigoInput.disabled = true;
+      boton.disabled = true;
+      botonRecargar.style.display = "inline-block";
+    })
+    .catch(() => {
+      resultado.className = "resultado-error";
+      resultado.innerText = "❌ Error al verificar el código.";
+    });
+  }
 </script>
 
 </body>

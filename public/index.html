@@ -9,8 +9,7 @@
 
   <style>
     body {
-      background: url("f1ec4f7e-3b11-414c-bb1c-3db302c97c66.jpg") no-repeat center center fixed;
-      background-size: cover;
+      background: radial-gradient(circle at top, #1a0000, #000 70%);
       font-family: 'Orbitron', sans-serif;
       color: white;
       text-align: center;
@@ -19,85 +18,90 @@
     }
 
     h1 {
-      font-size: 38px;
-      color: #ff0000;
+      font-size: 40px;
+      color: #ff1a1a;
+      margin-top: 30px;
       text-shadow:
-        0 0 5px #fff,
-        0 0 15px #ff0000,
-        0 0 25px #ff0000;
-      margin-top: 20px;
-      animation: latido 1.3s infinite;
-    }
-
-    @keyframes latido {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.07); }
+        0 0 6px rgba(255,0,0,0.6),
+        0 0 14px rgba(255,0,0,0.6);
     }
 
     #contenedor {
-      margin: 180px auto 40px;
-      max-width: 400px;
-      padding: 30px;
-      border-radius: 20px;
-      border: 3px solid #000;
-      background-color: rgba(0, 0, 0, 0.4);
-      box-shadow: 0 0 20px #000;
+      margin: 160px auto 40px;
+      max-width: 420px;
+      padding: 34px 30px;
+      border-radius: 22px;
+      background: rgba(10, 10, 10, 0.85);
+      box-shadow:
+        0 0 25px rgba(255,0,0,0.25),
+        inset 0 0 20px rgba(255,0,0,0.15);
+      border: 1px solid rgba(255,0,0,0.35);
     }
 
     input {
-      padding: 10px;
-      width: 80%;
+      padding: 14px;
+      width: 85%;
       font-size: 16px;
-      border-radius: 8px;
-      border: 2px solid #000;
+      border-radius: 12px;
+      border: 1px solid #444;
+      background: #111;
+      color: #eee;
       text-align: center;
     }
 
+    input::placeholder {
+      color: #777;
+    }
+
     input:disabled {
-      background: #555;
-      color: #ccc;
+      background: #1c1c1c;
+      color: #666;
       cursor: not-allowed;
     }
 
     button {
-      margin-top: 20px;
-      padding: 14px 28px;
+      margin-top: 22px;
+      padding: 16px 30px;
       font-size: 18px;
-      background-color: #00ccff;
-      border: none;
-      color: black;
-      border-radius: 100px;
+      background: linear-gradient(180deg, #444, #1a1a1a);
+      border: 1px solid #ff1a1a;
+      color: #fff;
+      border-radius: 999px;
       cursor: pointer;
-      box-shadow: 0 0 10px #000;
+      box-shadow:
+        0 0 12px rgba(255,0,0,0.35);
     }
 
     button:disabled {
-      background: #444;
-      color: #aaa;
+      background: #222;
+      border-color: #555;
+      color: #777;
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     #resultado {
-      margin-top: 20px;
-      font-size: 20px;
-      min-height: 24px;
+      margin-top: 24px;
+      font-size: 18px;
+      min-height: 28px;
     }
 
-    .resultado-exito { color:#00ff55 }
+    .resultado-exito { color:#00ff77 }
     .resultado-sinpremio { color:#ff3b3b }
-    .resultado-aviso { color:#ffaa00 }
-    .resultado-error { color:#ff0000 }
+    .resultado-aviso { color:#ffb000 }
+    .resultado-error { color:#ff1a1a }
 
     #botonRecargar {
       margin-top: 30px;
-      padding: 10px 22px;
+      padding: 12px 26px;
       font-size: 16px;
-      background-color: #222;
-      color: #00ccff;
-      border: 2px solid #00ccff;
-      border-radius: 30px;
+      background: transparent;
+      color: #ff1a1a;
+      border: 2px solid #ff1a1a;
+      border-radius: 999px;
       cursor: pointer;
       display: none;
+      box-shadow: 0 0 10px rgba(255,0,0,0.4);
     }
   </style>
 </head>
@@ -109,7 +113,7 @@
 <div id="contenedor">
   <input type="text" id="codigo" placeholder="Ingresá tu código"/>
   <br/>
-  <button id="botonTirar" onclick="tirar()">🎰 Probar suerte</button>
+  <button id="botonTirar" onclick="tirar()">🎰 PROBAR SUERTE</button>
 
   <div id="resultado"></div>
 
@@ -146,7 +150,6 @@
 
   function tirar() {
     const codigoInput = document.getElementById("codigo");
-    const boton = document.getElementById("botonTirar");
     const resultado = document.getElementById("resultado");
     const codigo = codigoInput.value.trim().toUpperCase();
 
@@ -156,7 +159,6 @@
       return;
     }
 
-    // 🔒 SI YA SE USÓ, BLOQUEA TODO
     if (usados[codigo]) {
       const first = getFirstUse(codigo);
       resultado.className = "resultado-aviso";

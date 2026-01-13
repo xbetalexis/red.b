@@ -63,7 +63,6 @@ input{
   color:#fff;
   font-size:16px;
   text-align:center;
-  outline:none;
 }
 
 button{
@@ -87,7 +86,7 @@ button:disabled{
 #resultado{
   margin-top:26px;
   font-size:17px;
-  min-height:44px;
+  min-height:48px;
   font-weight:700;
   line-height:1.4;
 }
@@ -97,78 +96,66 @@ button:disabled{
 <body>
 
 <div class="box">
-
   <h1>RED-B CASINO</h1>
   <div class="sub">SORTEO VIP · CÓDIGOS ÚNICOS</div>
 
-  <input
-    id="codigo"
-    type="text"
-    placeholder="INGRESÁ TU CÓDIGO"
-    autocomplete="off"
-    oninput="chequearCodigoUsado()"
-  >
-
+  <input id="codigo" placeholder="INGRESÁ TU CÓDIGO" autocomplete="off">
   <button id="btn" onclick="verificarCodigo()">PROBAR SUERTE</button>
 
   <div id="resultado"></div>
-
 </div>
 
 <script>
-// ===== STORAGE =====
-function getUsados(){
-  return JSON.parse(localStorage.getItem("codigos_usados") || "{}");
+// ===== STORAGE GLOBAL =====
+const STORAGE_KEY = "redb_estado";
+
+function getEstado(){
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
 }
 
-function guardarUsado(codigo){
-  const usados = getUsados();
-  usados[codigo] = new Date().toISOString();
-  localStorage.setItem("codigos_usados", JSON.stringify(usados));
+function setEstado(codigo){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    codigo,
+    fecha: new Date().toISOString(),
+    bloqueado: true
+  }));
 }
 
 function formatoFecha(iso){
   const f = new Date(iso);
   return f.toLocaleDateString("es-AR") +
-         " a las " +
-         f.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
+    " a las " +
+    f.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
 }
 
-// ===== CHEQUEO INSTANTEO (CLAVE) =====
-function chequearCodigoUsado(){
-  const codigo = document.getElementById("codigo").value.trim();
-  const usados = getUsados();
-  const boton = document.getElementById("btn");
-  const resultado = document.getElementById("resultado");
-
-  if(usados[codigo]){
-    boton.disabled = true;
-    resultado.innerText =
+// ===== BLOQUEO AL CARGAR =====
+window.onload = () => {
+  const estado = getEstado();
+  if(estado && estado.bloqueado){
+    document.getElementById("btn").disabled = true;
+    document.getElementById("resultado").innerText =
       "⚠️ Este código ya fue utilizado en este dispositivo el " +
-      formatoFecha(usados[codigo]);
-  }else{
-    boton.disabled = false;
-    resultado.innerText = "";
+      formatoFecha(estado.fecha);
   }
-}
+};
 
 // ===== VERIFICACION =====
 async function verificarCodigo(){
-  const codigo = document.getElementById("codigo").value.trim();
+  const codigo = document.getElementById("codigo").value.trim().toUpperCase();
   const resultado = document.getElementById("resultado");
-  const boton = document.getElementById("btn");
+  const btn = document.getElementById("btn");
 
   if(!codigo){
     resultado.innerText = "⚠️ Ingresá un código";
     return;
   }
 
-  const usados = getUsados();
-  if(usados[codigo]){
-    boton.disabled = true;
+  const estado = getEstado();
+  if(estado && estado.bloqueado){
+    btn.disabled = true;
     resultado.innerText =
       "⚠️ Este código ya fue utilizado en este dispositivo el " +
-      formatoFecha(usados[codigo]);
+      formatoFecha(estado.fecha);
     return;
   }
 
@@ -184,13 +171,13 @@ async function verificarCodigo(){
     const data = await res.json();
 
     if(data.valido){
-      guardarUsado(codigo);
-      boton.disabled = true;
+      setEstado(codigo);
+      btn.disabled = true;
     }
 
     resultado.innerText = data.mensaje;
 
-  }catch(e){
+  }catch{
     resultado.innerText = "❌ Error de conexión";
   }
 }

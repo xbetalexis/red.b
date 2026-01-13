@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Sorteo RED-B</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<style>
+body{
+  background:#0b0b0b;
+  color:#fff;
+  font-family:Arial, sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+.box{
+  background:#111;
+  padding:30px;
+  border-radius:12px;
+  width:100%;
+  max-width:380px;
+  text-align:center;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin:15px 0;
+  border-radius:8px;
+  border:none;
+}
+button{
+  width:100%;
+  padding:14px;
+  background:#d10000;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:18px;
+  cursor:pointer;
+}
+#resultado{margin-top:20px;font-size:18px}
+</style>
+</head>
+
+<body>
+<div class="box">
+  <h2>🎁 SORTEO RED-B</h2>
+  <input id="codigo" placeholder="Ingresá tu código">
+  <button onclick="verificar()">PROBAR SUERTE</button>
+  <div id="resultado"></div>
+</div>
+
+<script>
+async function verificar(){
+  const codigo = document.getElementById("codigo").value.trim();
+  if(!codigo) return;
+
+  const res = await fetch("/api/verificar-codigo",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ codigo })
+  });
+
+  const data = await res.json();
+  document.getElementById("resultado").innerText = data.mensaje;
+}
+</script>
+</body>
+</html>

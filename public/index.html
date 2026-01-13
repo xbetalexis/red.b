@@ -38,11 +38,6 @@ h1{
   letter-spacing:2px;
   color:#ff3b3b;
   margin-bottom:6px;
-  text-shadow:
-    0 2px 0 #7a0000,
-    0 4px 0 #5a0000,
-    0 6px 0 #3a0000,
-    0 0 12px rgba(255,0,0,0.8);
 }
 
 .sub{
@@ -86,7 +81,7 @@ button:disabled{
 #resultado{
   margin-top:26px;
   font-size:17px;
-  min-height:48px;
+  min-height:44px;
   font-weight:700;
   line-height:1.4;
 }
@@ -103,7 +98,6 @@ button:disabled{
     id="codigo"
     placeholder="INGRESÁ TU CÓDIGO"
     autocomplete="off"
-    oninput="chequearCodigo()"
   >
 
   <button id="btn" onclick="verificarCodigo()">PROBAR SUERTE</button>
@@ -112,7 +106,7 @@ button:disabled{
 </div>
 
 <script>
-// ===== STORAGE =====
+// ===== STORAGE POR CODIGO =====
 function getUsados(){
   return JSON.parse(localStorage.getItem("codigos_usados") || "{}");
 }
@@ -130,27 +124,10 @@ function formatoFecha(iso){
     f.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
 }
 
-// ===== CHEQUEO VISUAL =====
-function chequearCodigo(){
-  const codigo = document.getElementById("codigo").value.trim().toUpperCase();
-  const usados = getUsados();
-  const btn = document.getElementById("btn");
-  const resultado = document.getElementById("resultado");
-
-  if(usados[codigo]){
-    btn.disabled = true;
-    resultado.innerText =
-      "⚠️ Este código ya fue utilizado en este dispositivo el " +
-      formatoFecha(usados[codigo]);
-  }else{
-    btn.disabled = false;
-    resultado.innerText = "";
-  }
-}
-
-// ===== VERIFICACION (CIERRE TOTAL) =====
+// ===== VERIFICACION (ESTA ES LA CLAVE) =====
 async function verificarCodigo(){
-  const codigo = document.getElementById("codigo").value.trim().toUpperCase();
+  const input = document.getElementById("codigo");
+  const codigo = input.value.trim().toUpperCase();
   const resultado = document.getElementById("resultado");
   const btn = document.getElementById("btn");
 
@@ -159,7 +136,7 @@ async function verificarCodigo(){
     return;
   }
 
-  // 🔒 BLOQUEO DEFINITIVO ANTES DE LA API
+  // 🔒 BLOQUEO REAL ANTES DE LA API
   const usados = getUsados();
   if(usados[codigo]){
     btn.disabled = true;
@@ -181,7 +158,7 @@ async function verificarCodigo(){
     const data = await res.json();
 
     if(data.valido){
-      guardarUsado(codigo); // 👈 SE GUARDA SIEMPRE
+      guardarUsado(codigo);   // 👈 SOLO ACÁ SE GUARDA
       btn.disabled = true;
     }
 

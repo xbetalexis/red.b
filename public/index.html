@@ -53,6 +53,12 @@
       text-align: center;
     }
 
+    input:disabled {
+      background: #555;
+      color: #ccc;
+      cursor: not-allowed;
+    }
+
     button {
       margin-top: 20px;
       padding: 14px 28px;
@@ -66,7 +72,8 @@
     }
 
     button:disabled {
-      background: #555;
+      background: #444;
+      color: #aaa;
       cursor: not-allowed;
     }
 
@@ -112,7 +119,6 @@
 </div>
 
 <script>
-  // ===== STORAGE (MISMA LÓGICA QUE FUNCIONABA) =====
   const usados = JSON.parse(localStorage.getItem('usados') || '{}');
 
   function setFirstUse(codigo) {
@@ -132,12 +138,16 @@
     return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
+  function bloquearTodo() {
+    document.getElementById("codigo").disabled = true;
+    document.getElementById("botonTirar").disabled = true;
+    document.getElementById("botonRecargar").style.display = "inline-block";
+  }
+
   function tirar() {
     const codigoInput = document.getElementById("codigo");
     const boton = document.getElementById("botonTirar");
     const resultado = document.getElementById("resultado");
-    const botonRecargar = document.getElementById("botonRecargar");
-
     const codigo = codigoInput.value.trim().toUpperCase();
 
     if (!codigo) {
@@ -146,15 +156,14 @@
       return;
     }
 
-    // 🔒 BLOQUEO REAL ANTES DE LA API
+    // 🔒 SI YA SE USÓ, BLOQUEA TODO
     if (usados[codigo]) {
       const first = getFirstUse(codigo);
       resultado.className = "resultado-aviso";
       resultado.innerHTML =
         `🚫 Ya usaste este código en este dispositivo.<br>` +
         `🕒 Primera vez: <b>${formatFecha(first)}</b>`;
-      boton.disabled = true;
-      botonRecargar.style.display = "inline-block";
+      bloquearTodo();
       return;
     }
 
@@ -184,13 +193,12 @@
         resultado.innerText = data.mensaje || "❌ Código inválido.";
       }
 
-      codigoInput.disabled = true;
-      boton.disabled = true;
-      botonRecargar.style.display = "inline-block";
+      bloquearTodo();
     })
     .catch(() => {
       resultado.className = "resultado-error";
       resultado.innerText = "❌ Error al verificar el código.";
+      bloquearTodo();
     });
   }
 </script>

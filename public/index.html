@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Sorteo RED-B</title>
+<title>RED-B CASINO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- FUENTES CASINO -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+<!-- FUENTES -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
 *{
@@ -17,14 +17,7 @@
 
 body{
   background:
-    radial-gradient(circle at top,#2a0000,#000 65%),
-    repeating-linear-gradient(
-      45deg,
-      rgba(255,0,0,0.05),
-      rgba(255,0,0,0.05) 2px,
-      transparent 2px,
-      transparent 6px
-    );
+    radial-gradient(circle at top,#2a0000,#000 65%);
   color:#fff;
   font-family:'Montserrat',sans-serif;
   display:flex;
@@ -35,97 +28,95 @@ body{
 
 /* CONTENEDOR */
 .box{
-  background:linear-gradient(180deg,rgba(0,0,0,0.9),rgba(20,0,0,0.95));
-  padding:34px 30px;
-  border-radius:20px;
+  background:linear-gradient(180deg,rgba(0,0,0,0.92),rgba(20,0,0,0.97));
+  padding:36px 30px;
+  border-radius:22px;
   width:100%;
-  max-width:400px;
+  max-width:420px;
   text-align:center;
   box-shadow:
-    0 0 25px rgba(255,0,0,0.4),
-    inset 0 0 25px rgba(255,0,0,0.08);
-  border:1px solid rgba(255,0,0,0.25);
+    0 0 35px rgba(255,0,0,0.45),
+    inset 0 0 30px rgba(255,0,0,0.12);
+  border:1px solid rgba(255,0,0,0.35);
 }
 
-/* TITULO */
-h2{
+/* TITULO 3D */
+h1{
   font-family:'Orbitron',sans-serif;
+  font-size:34px;
   font-weight:800;
-  margin-bottom:8px;
+  letter-spacing:2px;
   color:#ff3b3b;
+  margin-bottom:6px;
   text-shadow:
-    0 0 6px rgba(255,0,0,0.8),
-    0 0 18px rgba(255,0,0,0.5);
+    0 2px 0 #7a0000,
+    0 4px 0 #5a0000,
+    0 6px 0 #3a0000,
+    0 0 12px rgba(255,0,0,0.8),
+    0 0 28px rgba(255,0,0,0.6);
 }
 
+/* SUBTITULO */
 .sub{
-  font-size:13px;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:1.2px;
   color:#ffb3b3;
-  margin-bottom:22px;
-  letter-spacing:0.5px;
+  margin-bottom:26px;
+  text-shadow:0 0 10px rgba(255,0,0,0.4);
 }
 
 /* INPUT */
 input{
   width:100%;
-  padding:15px;
-  margin:14px 0;
-  border-radius:12px;
-  border:1px solid rgba(255,0,0,0.35);
+  padding:16px;
+  margin:16px 0;
+  border-radius:14px;
+  border:1px solid rgba(255,0,0,0.4);
   background:#070000;
   color:#fff;
   font-size:16px;
   text-align:center;
   outline:none;
-  box-shadow:inset 0 0 10px rgba(255,0,0,0.2);
+  box-shadow:inset 0 0 14px rgba(255,0,0,0.25);
 }
 
 input::placeholder{
-  color:#ffb3b3;
+  color:#ff9a9a;
 }
 
 /* BOTON 3D */
 button{
   width:100%;
-  padding:16px;
-  margin-top:10px;
-  background:linear-gradient(180deg,#ff4d4d,#b00000);
+  padding:18px;
+  margin-top:12px;
+  background:linear-gradient(180deg,#ff4d4d,#a80000);
   color:#fff;
   border:none;
-  border-radius:14px;
+  border-radius:16px;
   font-size:18px;
-  font-weight:700;
+  font-weight:800;
   cursor:pointer;
-  letter-spacing:1px;
+  letter-spacing:1.5px;
   box-shadow:
-    0 6px 0 #700000,
-    0 12px 25px rgba(255,0,0,0.6);
+    0 6px 0 #6e0000,
+    0 14px 28px rgba(255,0,0,0.6);
 }
 
 button:active{
   transform:translateY(4px);
   box-shadow:
-    0 2px 0 #700000,
-    0 8px 15px rgba(255,0,0,0.5);
+    0 2px 0 #6e0000,
+    0 8px 18px rgba(255,0,0,0.55);
 }
 
 /* RESULTADO */
 #resultado{
-  margin-top:22px;
+  margin-top:26px;
   font-size:18px;
   min-height:28px;
-  font-weight:600;
-  text-shadow:0 0 8px rgba(255,0,0,0.5);
-}
-
-/* ICONOS */
-.icons{
-  display:flex;
-  justify-content:center;
-  gap:14px;
-  margin-bottom:14px;
-  font-size:26px;
-  text-shadow:0 0 10px rgba(255,0,0,0.7);
+  font-weight:700;
+  text-shadow:0 0 10px rgba(255,0,0,0.55);
 }
 </style>
 </head>
@@ -134,11 +125,7 @@ button:active{
 
 <div class="box">
 
-  <div class="icons">
-    🎰 💎 🃏 🎲
-  </div>
-
-  <h2>RED-B CASINO</h2>
+  <h1>RED-B CASINO</h1>
   <div class="sub">SORTEO VIP · CÓDIGOS ÚNICOS</div>
 
   <input
@@ -148,7 +135,7 @@ button:active{
     autocomplete="off"
   >
 
-  <button onclick="verificarCodigo()">🎰 PROBAR SUERTE</button>
+  <button onclick="verificarCodigo()">PROBAR SUERTE</button>
 
   <div id="resultado"></div>
 
@@ -181,10 +168,10 @@ async function verificarCodigo(){
     return;
   }
 
-  resultado.innerText = "⏳ Girando la suerte...";
+  resultado.innerText = "⏳ Verificando suerte...";
 
   try{
-    const res = await fetch("/api/verificar-codigo", {
+    const res = await fetch("/api/verificar-codigo",{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body:JSON.stringify({ codigo })

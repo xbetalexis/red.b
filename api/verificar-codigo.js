@@ -1,20 +1,13 @@
 import fs from "fs";
 import path from "path";
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ mensaje: "Método no permitido" });
   }
 
   try {
-    const buffers = [];
-
-    for await (const chunk of req) {
-      buffers.push(chunk);
-    }
-
-    const body = JSON.parse(Buffer.concat(buffers).toString());
-    const { codigo } = body;
+    const { codigo } = req.body;
 
     if (!codigo) {
       return res.json({ mensaje: "❌ Código vacío" });
@@ -29,16 +22,13 @@ export default async function handler(req, res) {
       return res.json({ mensaje: "❌ Código inválido" });
     }
 
-    if (item.usado) {
-      return res.json({ mensaje: "⚠️ Código ya utilizado" });
-    }
+    return res.json({
+      mensaje: item.premio,
+      valido: true,
+      codigo: codigo
+    });
 
-    item.usado = true;
-    fs.writeFileSync(ruta, JSON.stringify(lista, null, 2));
-
-    return res.json({ mensaje: item.premio });
-
-  } catch (error) {
+  } catch (e) {
     return res.status(500).json({ mensaje: "Error interno" });
   }
 }

@@ -27,9 +27,7 @@ body{
   width:100%;
   max-width:420px;
   text-align:center;
-  box-shadow:
-    0 0 35px rgba(255,0,0,0.45),
-    inset 0 0 30px rgba(255,0,0,0.12);
+  box-shadow:0 0 35px rgba(255,0,0,0.45);
   border:1px solid rgba(255,0,0,0.35);
 }
 
@@ -44,8 +42,7 @@ h1{
     0 2px 0 #7a0000,
     0 4px 0 #5a0000,
     0 6px 0 #3a0000,
-    0 0 12px rgba(255,0,0,0.8),
-    0 0 28px rgba(255,0,0,0.6);
+    0 0 12px rgba(255,0,0,0.8);
 }
 
 .sub{
@@ -67,7 +64,6 @@ input{
   font-size:16px;
   text-align:center;
   outline:none;
-  box-shadow:inset 0 0 14px rgba(255,0,0,0.25);
 }
 
 button{
@@ -81,22 +77,17 @@ button{
   font-size:18px;
   font-weight:800;
   cursor:pointer;
-  letter-spacing:1.5px;
-  box-shadow:
-    0 6px 0 #6e0000,
-    0 14px 28px rgba(255,0,0,0.6);
 }
 
 button:disabled{
-  background:linear-gradient(180deg,#555,#333);
-  box-shadow:none;
+  background:#444;
   cursor:not-allowed;
 }
 
 #resultado{
   margin-top:26px;
   font-size:17px;
-  min-height:40px;
+  min-height:44px;
   font-weight:700;
   line-height:1.4;
 }
@@ -115,6 +106,7 @@ button:disabled{
     type="text"
     placeholder="INGRESÁ TU CÓDIGO"
     autocomplete="off"
+    oninput="chequearCodigoUsado()"
   >
 
   <button id="btn" onclick="verificarCodigo()">PROBAR SUERTE</button>
@@ -124,7 +116,7 @@ button:disabled{
 </div>
 
 <script>
-// ===== UTILIDADES =====
+// ===== STORAGE =====
 function getUsados(){
   return JSON.parse(localStorage.getItem("codigos_usados") || "{}");
 }
@@ -135,18 +127,36 @@ function guardarUsado(codigo){
   localStorage.setItem("codigos_usados", JSON.stringify(usados));
 }
 
-function formatoFecha(fechaISO){
-  const f = new Date(fechaISO);
-  return f.toLocaleDateString("es-AR") + " a las " +
-         f.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+function formatoFecha(iso){
+  const f = new Date(iso);
+  return f.toLocaleDateString("es-AR") +
+         " a las " +
+         f.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
+}
+
+// ===== CHEQUEO INSTANTEO (CLAVE) =====
+function chequearCodigoUsado(){
+  const codigo = document.getElementById("codigo").value.trim();
+  const usados = getUsados();
+  const boton = document.getElementById("btn");
+  const resultado = document.getElementById("resultado");
+
+  if(usados[codigo]){
+    boton.disabled = true;
+    resultado.innerText =
+      "⚠️ Este código ya fue utilizado en este dispositivo el " +
+      formatoFecha(usados[codigo]);
+  }else{
+    boton.disabled = false;
+    resultado.innerText = "";
+  }
 }
 
 // ===== VERIFICACION =====
 async function verificarCodigo(){
-  const input = document.getElementById("codigo");
+  const codigo = document.getElementById("codigo").value.trim();
   const resultado = document.getElementById("resultado");
   const boton = document.getElementById("btn");
-  const codigo = input.value.trim();
 
   if(!codigo){
     resultado.innerText = "⚠️ Ingresá un código";
@@ -154,7 +164,6 @@ async function verificarCodigo(){
   }
 
   const usados = getUsados();
-
   if(usados[codigo]){
     boton.disabled = true;
     resultado.innerText =

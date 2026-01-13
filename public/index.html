@@ -112,6 +112,7 @@
 </div>
 
 <script>
+  // ===== STORAGE (MISMA LÓGICA QUE FUNCIONABA) =====
   const usados = JSON.parse(localStorage.getItem('usados') || '{}');
 
   function setFirstUse(codigo) {
@@ -136,7 +137,8 @@
     const boton = document.getElementById("botonTirar");
     const resultado = document.getElementById("resultado");
     const botonRecargar = document.getElementById("botonRecargar");
-    const codigo = codigoInput.value.trim();
+
+    const codigo = codigoInput.value.trim().toUpperCase();
 
     if (!codigo) {
       resultado.className = "resultado-aviso";
@@ -144,6 +146,7 @@
       return;
     }
 
+    // 🔒 BLOQUEO REAL ANTES DE LA API
     if (usados[codigo]) {
       const first = getFirstUse(codigo);
       resultado.className = "resultado-aviso";
@@ -162,7 +165,8 @@
     })
     .then(r => r.json())
     .then(data => {
-      if (data.estado === "valido") {
+
+      if (data.valido === true) {
         if ((data.mensaje || "").toLowerCase().includes("sin premio")) {
           resultado.className = "resultado-sinpremio";
           resultado.innerText = "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA";
@@ -170,13 +174,14 @@
           resultado.className = "resultado-exito";
           resultado.innerText = "✅ " + data.mensaje;
         }
+
         usados[codigo] = true;
         localStorage.setItem("usados", JSON.stringify(usados));
         setFirstUse(codigo);
 
       } else {
         resultado.className = "resultado-error";
-        resultado.innerText = "❌ Código inválido.";
+        resultado.innerText = data.mensaje || "❌ Código inválido.";
       }
 
       codigoInput.disabled = true;

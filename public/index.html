@@ -6,7 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
 body{
   background:radial-gradient(circle at top,#1b0000,#000 70%);
@@ -19,13 +23,13 @@ body{
 }
 
 .box{
-  background:rgba(0,0,0,0.75);
+  background:rgba(0,0,0,0.8);
   padding:30px;
   border-radius:16px;
   width:100%;
   max-width:380px;
   text-align:center;
-  box-shadow:0 0 25px rgba(255,0,0,0.35);
+  box-shadow:0 0 30px rgba(255,0,0,0.45);
 }
 
 h2{
@@ -65,7 +69,7 @@ button:active{
 #resultado{
   margin-top:22px;
   font-size:18px;
-  min-height:24px;
+  min-height:26px;
 }
 </style>
 </head>
@@ -88,6 +92,18 @@ button:active{
 </div>
 
 <script>
+// ===== CONTROL DE CODIGOS USADOS (localStorage) =====
+function getUsados(){
+  return JSON.parse(localStorage.getItem("codigos_usados") || "[]");
+}
+
+function marcarUsado(codigo){
+  const usados = getUsados();
+  usados.push(codigo);
+  localStorage.setItem("codigos_usados", JSON.stringify(usados));
+}
+
+// ===== VERIFICACION =====
 async function verificarCodigo(){
   const input = document.getElementById("codigo");
   const resultado = document.getElementById("resultado");
@@ -95,6 +111,12 @@ async function verificarCodigo(){
 
   if(!codigo){
     resultado.innerText = "⚠️ Ingresá un código";
+    return;
+  }
+
+  const usados = getUsados();
+  if(usados.includes(codigo)){
+    resultado.innerText = "⚠️ Código ya utilizado";
     return;
   }
 
@@ -110,9 +132,14 @@ async function verificarCodigo(){
     });
 
     const data = await res.json();
+
+    if(data.valido){
+      marcarUsado(codigo);
+    }
+
     resultado.innerText = data.mensaje;
 
-  }catch(e){
+  }catch(err){
     resultado.innerText = "❌ Error de conexión";
   }
 }

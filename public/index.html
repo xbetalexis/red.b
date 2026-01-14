@@ -110,6 +110,14 @@
       display: none;
       box-shadow: 0 0 10px rgba(255,0,0,0.4);
     }
+
+    /* 🔹 ID de jugada */
+    .id-jugada {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #ffd700;
+      word-break: break-all;
+    }
   </style>
 </head>
 
@@ -134,6 +142,25 @@
 
 <script>
   const usados = JSON.parse(localStorage.getItem('usados') || '{}');
+
+  // 🔹 ID DE JUGADA
+  function generarIDJugada() {
+    const f = new Date();
+    const d = String(f.getDate()).padStart(2, '0');
+    const m = String(f.getMonth()+1).padStart(2, '0');
+    const y = String(f.getFullYear()).slice(-2);
+    const r = Math.floor(1000 + Math.random() * 9000);
+    return `RB-${d}${m}${y}-${r}`;
+  }
+
+  function obtenerIDJugada() {
+    let id = localStorage.getItem("idJugada");
+    if (!id) {
+      id = generarIDJugada();
+      localStorage.setItem("idJugada", id);
+    }
+    return id;
+  }
 
   function setFirstUse(codigo) {
     const key = `firstUsed_${codigo}`;
@@ -162,6 +189,7 @@
     const codigoInput = document.getElementById("codigo");
     const resultado = document.getElementById("resultado");
     const codigo = codigoInput.value.trim().toUpperCase();
+    const idJugada = obtenerIDJugada(); // 🔹 ID DE JUGADA
 
     if (!codigo) {
       resultado.className = "resultado-aviso";
@@ -174,7 +202,8 @@
       resultado.className = "resultado-aviso";
       resultado.innerHTML =
         `🚫 Ya usaste este código en este dispositivo.<br>` +
-        `🕒 Primera vez: <b>${formatFecha(first)}</b>`;
+        `🕒 Primera vez: <b>${formatFecha(first)}</b>` +
+        `<div class="id-jugada">🆔 Jugada: <b>${idJugada}</b></div>`;
       bloquearTodo();
       return;
     }
@@ -200,9 +229,12 @@
         localStorage.setItem("usados", JSON.stringify(usados));
         setFirstUse(codigo);
 
+        resultado.innerHTML += `<div class="id-jugada">🆔 Jugada: <b>${idJugada}</b></div>`;
+
       } else {
         resultado.className = "resultado-error";
         resultado.innerText = data.mensaje || "❌ Código inválido.";
+        resultado.innerHTML += `<div class="id-jugada">🆔 Jugada: <b>${idJugada}</b></div>`;
       }
 
       bloquearTodo();
@@ -210,6 +242,7 @@
     .catch(() => {
       resultado.className = "resultado-error";
       resultado.innerText = "❌ Error al verificar el código.";
+      resultado.innerHTML += `<div class="id-jugada">🆔 Jugada: <b>${idJugada}</b></div>`;
       bloquearTodo();
     });
   }

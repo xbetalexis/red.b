@@ -16,6 +16,7 @@
       margin:0;
       min-height:100vh;
     }
+
     h1{
       margin-top:40px;
       font-family:'Orbitron',sans-serif;
@@ -23,6 +24,7 @@
       letter-spacing:3px;
       color:#ff1a1a;
     }
+
     #contenedor{
       margin:70px auto 25px;
       max-width:430px;
@@ -31,11 +33,13 @@
       background:rgba(10,10,10,.85);
       border:1px solid rgba(255,0,0,.35);
     }
+
     #contador{
       font-size:16px;
       margin-bottom:18px;
       color:#ffd700;
     }
+
     button{
       padding:16px 34px;
       font-size:19px;
@@ -47,15 +51,18 @@
       cursor:pointer;
       margin-top:18px;
     }
+
     button:disabled{
       opacity:.5;
       cursor:not-allowed;
     }
+
     #resultado{
       margin-top:26px;
       font-size:20px;
       min-height:32px;
     }
+
     .ok{ color:#00ff77 }
     .no{ color:#ff3b3b }
 
@@ -65,10 +72,34 @@
       color:#ffd700;
     }
 
+    .captura{
+      margin-top:12px;
+      font-size:15px;
+      color:#ffd700;
+      font-weight:600;
+    }
+
     #actualizar{
       display:none;
       background:transparent;
       border:2px solid #ff1a1a;
+    }
+
+    #info-clientes{
+      max-width:430px;
+      margin:0 auto;
+      padding:18px 24px;
+      font-size:13px;
+      line-height:1.6;
+      color:#d0b060;
+      opacity:.85;
+    }
+
+    #info-clientes span{
+      display:block;
+      margin-bottom:6px;
+      font-weight:600;
+      color:#ffd700;
     }
   </style>
 </head>
@@ -80,13 +111,18 @@
 <div id="contenedor">
   <div id="contador">Tenés <b>3</b> intentos disponibles</div>
 
-  <!-- BOTÓN PRINCIPAL -->
   <button id="jugar">🎰 PROBAR SUERTE</button>
 
   <div id="resultado"></div>
 
-  <!-- BOTÓN SECUNDARIO -->
   <button id="actualizar" onclick="location.reload()">🔄 PROBAR OTRA VEZ</button>
+</div>
+
+<div id="info-clientes">
+  <span>Información para clientes</span>
+  Este sistema de sorteos es un beneficio adicional para clientes activos.<br>
+  Los premios pueden variar y están sujetos a disponibilidad.<br>
+  Cada intento queda registrado automáticamente.
 </div>
 
 <script>
@@ -100,9 +136,9 @@ function getDeviceId(){
 }
 
 const jugarBtn   = document.getElementById("jugar");
-const actualizar = document.getElementById("actualizar");
 const resultado  = document.getElementById("resultado");
 const contador   = document.getElementById("contador");
+const actualizar = document.getElementById("actualizar");
 
 function formatearFecha(iso){
   const d = new Date(iso);
@@ -111,11 +147,10 @@ function formatearFecha(iso){
 }
 
 jugarBtn.addEventListener("click", async () => {
-  // 🔒 Apenas toca jugar: bloquear botón principal
   jugarBtn.disabled = true;
-
-  resultado.innerHTML = "⏳ Procesando...";
   actualizar.style.display = "none";
+  resultado.innerHTML = "⏳ Procesando...";
+  resultado.className = "";
 
   const r = await fetch("/api/jugar",{
     method:"POST",
@@ -137,20 +172,28 @@ jugarBtn.addEventListener("click", async () => {
     return;
   }
 
-  /* 🎰 RESULTADO */
+  /* 🎰 JUGADA */
   contador.innerHTML =
     `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
 
-  resultado.className = data.ganador ? "ok" : "no";
-  resultado.innerHTML = `
-    ${data.ganador ? "🎉 " + data.premio : "❌ SIN PREMIO"}
-    <div class="id-jugada">🆔 Código de referencia: <b>${data.id}</b></div>
-  `;
+  if(data.ganador){
+    resultado.className = "ok";
+    resultado.innerHTML = `
+      🎉 ${data.premio}
+      <div class="id-jugada">🆔 Código de referencia: <b>${data.id}</b></div>
+      <div class="captura">📸 SACÁ CAPTURA Y ENVIÁLA A LA LÍNEA</div>
+    `;
+  } else {
+    resultado.className = "no";
+    resultado.innerHTML = `
+      ❌ SIN PREMIO
+      <div class="id-jugada">🆔 Código de referencia: <b>${data.id}</b></div>
+    `;
+  }
 
-  // ❌ ocultar jugar
+  // ocultar jugar y mostrar solo probar otra vez si quedan intentos
   jugarBtn.style.display = "none";
 
-  // ✅ mostrar SOLO probar otra vez si quedan intentos
   if(data.intentosRestantes > 0){
     actualizar.style.display = "inline-block";
   }

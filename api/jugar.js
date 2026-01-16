@@ -1,12 +1,12 @@
 // /api/jugar.js
 
-// intentos por IP: { ip: { count, firstTime } }
 let intentosPorIP = {};
 let ganadoresTotales = 0;
+let registros = []; // 📒 REGISTRO DE INTENTOS
 
 const MAX_INTENTOS = 3;
-const BLOQUEO_MS = 24 * 60 * 60 * 1000; // 24 horas
-const LIMITE_GANADORES = 50; // ajustable
+const BLOQUEO_MS = 24 * 60 * 60 * 1000; // 24hs
+const LIMITE_GANADORES = 50;
 
 export default function handler(req, res) {
   const ip =
@@ -16,7 +16,7 @@ export default function handler(req, res) {
 
   const ahora = Date.now();
 
-  // 🔁 inicializar IP si no existe
+  // inicializar IP
   if (!intentosPorIP[ip]) {
     intentosPorIP[ip] = {
       count: 0,
@@ -26,52 +26,74 @@ export default function handler(req, res) {
 
   const dataIP = intentosPorIP[ip];
 
-  // ⏱️ reset si pasaron 24hs
+  // reset a las 24hs
   if (ahora - dataIP.firstTime > BLOQUEO_MS) {
     dataIP.count = 0;
     dataIP.firstTime = ahora;
   }
 
-  // 🚫 si superó intentos
+  // 🚫 bloqueado por límite
   if (dataIP.count >= MAX_INTENTOS) {
+    registrarIntento({
+      ip,
+      ganador: false,
+      premio: "BLOQUEADO – LIMITE ALCANZADO"
+    });
+
     return res.status(200).json({
       ok: false,
       mensaje: "🚫 Ya intentaste en este dispositivo. Volvé luego de las 24hs."
     });
   }
 
-  // 👉 registrar intento
   dataIP.count++;
 
-  // 🎁 premios (OCULTOS)
+  // 🎁 premios ocultos
   const premios = [
     { texto: "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", prob: 80, ganador: false },
     { texto: "🎁 GANASTE 100 FICHAS", prob: 15, ganador: true },
     { texto: "🎉 GANASTE 300 FICHAS", prob: 5, ganador: true }
   ];
 
-  // 🚫 límite de ganadores global
+  // límite global de ganadores
   if (ganadoresTotales >= LIMITE_GANADORES) {
+    const id = generarID();
+    registrarIntento({
+      ip,
+      ganador: false,
+      premio: "SIN PREMIO – CAMPAÑA FINALIZADA",
+      id
+    });
+
     return res.status(200).json({
       ok: true,
       ganador: false,
       premio: "❌ SIN PREMIO – CAMPAÑA FINALIZADA",
-      id: generarID()
+      id
     });
   }
 
-  // 🎲 sorteo
+  // sorteo
   const resultado = elegirPremio(premios);
+  const id = generarID();
 
   if (resultado.ganador) {
     ganadoresTotales++;
   }
 
+  // 📒 guardar registro
+  registrarIntento({
+    ip,
+    ganador: resultado.ganador,
+    premio: resultado.texto,
+    id
+  });
+
   return res.status(200).json({
     ok: true,
     ganador: resultado.ganador,
     premio: resultado.texto,
-    id: generarID()
+    id
   });
 }
 
@@ -81,16 +103,24 @@ export default function handler(req, res) {
 
 function elegirPremio(lista) {
   const r = Math.random() * 100;
-  let acumulado = 0;
-
+  let acc = 0;
   for (const p of lista) {
-    acumulado += p.prob;
-    if (r < acumulado) return p;
+    acc += p.prob;
+    if (r < acc) return p;
   }
-
   return lista[0];
 }
 
 function generarID() {
   return "RB-" + Date.now().toString().slice(-6);
+}
+
+function registrarIntento(data) {
+  registros.push({
+    ...data,
+    fecha: new Date().toISOString()
+  });
+
+  // 👉 solo para debug (opcional)
+  console.log("📒 REGISTRO:", registros[registros.length - 1]);
 }

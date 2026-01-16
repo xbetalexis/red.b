@@ -65,22 +65,51 @@
         0 0 14px rgba(255,0,0,.6);
     }
 
-    #resultado{
-      margin-top:28px;
-      font-size:20px;
-      min-height:30px;
+    button:disabled{
+      opacity:.6;
+      cursor:not-allowed;
     }
 
-    .ok{color:#00ff77}
-    .no{color:#ff3b3b}
+    #resultado{
+      margin-top:26px;
+      font-size:20px;
+      min-height:32px;
+    }
 
-    #actualizar,
-    #whats,
+    .ok{ color:#00ff77 }
+    .no{ color:#ff3b3b }
+
+    .id-jugada{
+      margin-top:10px;
+      font-size:14px;
+      color:#ffd700;
+      opacity:.9;
+    }
+
+    #actualizar{
+      display:none;
+      background:transparent;
+      border:2px solid #ff1a1a;
+      box-shadow:0 0 10px rgba(255,0,0,.5);
+    }
+
+    #whats{
+      display:none;
+      background:linear-gradient(180deg,#00e676,#00a84f);
+      color:#003300;
+      border:none;
+      box-shadow:
+        0 3px 0 #007a38,
+        0 8px 18px rgba(0,0,0,.6);
+    }
+
     #leyenda{
       display:none;
+      margin-top:12px;
+      font-size:14px;
+      color:#ffd700;
     }
 
-    /* 🔹 BLOQUE INFORMATIVO */
     #info-clientes{
       max-width:430px;
       margin:0 auto;
@@ -89,14 +118,12 @@
       line-height:1.6;
       color:#d0b060;
       opacity:.85;
-      text-shadow:0 0 6px rgba(0,0,0,.6);
     }
 
     #info-clientes span{
       display:block;
       margin-bottom:6px;
       font-weight:600;
-      letter-spacing:.5px;
       color:#ffd700;
     }
   </style>
@@ -108,8 +135,16 @@
 
 <div id="contenedor">
   <div id="contador">Tenés <b>3</b> intentos disponibles</div>
+
   <button id="jugar">🎰 PROBAR SUERTE</button>
+
   <div id="resultado"></div>
+
+  <button id="actualizar" onclick="location.reload()">🔄 Probar otra vez</button>
+
+  <button id="whats">📲 Reclamar premio</button>
+
+  <div id="leyenda">📸 Sacá captura y enviala a la línea</div>
 </div>
 
 <div id="info-clientes">
@@ -132,6 +167,9 @@ function getDeviceId(){
 const jugarBtn = document.getElementById("jugar");
 const resultado = document.getElementById("resultado");
 const contador = document.getElementById("contador");
+const actualizar = document.getElementById("actualizar");
+const whats = document.getElementById("whats");
+const leyenda = document.getElementById("leyenda");
 
 function formatearFecha(iso){
   const d = new Date(iso);
@@ -141,6 +179,7 @@ function formatearFecha(iso){
 
 jugarBtn.addEventListener("click", async () => {
   jugarBtn.disabled = true;
+  resultado.className = "";
   resultado.innerText = "⏳ Procesando...";
 
   const r = await fetch("/api/jugar",{
@@ -150,10 +189,16 @@ jugarBtn.addEventListener("click", async () => {
   });
   const data = await r.json();
 
+  /* ===== BLOQUEADO ===== */
   if(!data.ok){
     jugarBtn.style.display="none";
+    actualizar.style.display="none";
+    whats.style.display="none";
+    leyenda.style.display="none";
+
     resultado.className="no";
     resultado.innerText="🚫 Ya usaste los intentos de hoy.";
+
     if(data.proximoIntento){
       contador.innerHTML =
         `⏱️ Podés volver a intentar el <b>${formatearFecha(data.proximoIntento)}</b>`;
@@ -161,12 +206,31 @@ jugarBtn.addEventListener("click", async () => {
     return;
   }
 
+  /* ===== JUGADA ===== */
   contador.innerHTML =
     `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
 
   resultado.className = data.ganador ? "ok" : "no";
-  resultado.innerHTML = data.premio;
-  jugarBtn.disabled=false;
+  resultado.innerHTML =
+    `${data.premio}
+     <div class="id-jugada">🆔 Código de referencia: <b>${data.id}</b></div>`;
+
+  if(data.ganador){
+    whats.style.display="inline-block";
+    leyenda.style.display="block";
+    whats.onclick = () =>
+      window.open(
+        "https://wa.me/5491155632400?text=Hola%20gané%20un%20premio.%20Código%20${data.id}",
+        "_blank"
+      );
+  }
+
+  if(data.intentosRestantes > 0){
+    actualizar.style.display="inline-block";
+    jugarBtn.disabled=false;
+  } else {
+    jugarBtn.style.display="none";
+  }
 });
 </script>
 

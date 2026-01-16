@@ -11,7 +11,7 @@ export default function handler(req, res) {
 
   const ahora = Date.now();
 
-  // Inicializar si no existe
+  // Inicializar IP
   if (!intentosPorIP[ip]) {
     intentosPorIP[ip] = {
       count: 0,
@@ -21,13 +21,13 @@ export default function handler(req, res) {
 
   const data = intentosPorIP[ip];
 
-  // Si ya empezó a jugar y pasó el bloqueo → reset
+  // Reset si ya pasó el bloqueo
   if (data.firstClickTime && ahora - data.firstClickTime >= BLOQUEO_MS) {
     data.count = 0;
     data.firstClickTime = null;
   }
 
-  // 🚫 Si ya usó los 3 intentos
+  // 🚫 BLOQUEO SOLO CUANDO INTENTA EL 4°
   if (data.count >= MAX_INTENTOS) {
     const proximo = new Date(data.firstClickTime + BLOQUEO_MS);
     return res.json({
@@ -37,11 +37,11 @@ export default function handler(req, res) {
     });
   }
 
-  // 👉 REGISTRAR INTENTO (ACÁ, NO ANTES)
+  // 👉 REGISTRAR INTENTO REAL
   data.count++;
 
-  // Si es el primer clic del ciclo, marcar hora
-  if (!data.firstClickTime) {
+  // Guardar hora SOLO en el primer intento
+  if (data.count === 1) {
     data.firstClickTime = ahora;
   }
 

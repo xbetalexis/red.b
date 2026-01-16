@@ -5,76 +5,166 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SORTEO PRO</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <!-- FUENTES -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
     body{
-      background:radial-gradient(circle at top,#1a0000,#000 70%);
-      font-family:'Orbitron',sans-serif;
+      background:
+        radial-gradient(circle at top, #2b0000, #000 70%),
+        repeating-linear-gradient(
+          45deg,
+          rgba(255,0,0,0.04),
+          rgba(255,0,0,0.04) 2px,
+          transparent 2px,
+          transparent 6px
+        );
+      font-family:'Rajdhani',sans-serif;
       color:#fff;
       text-align:center;
       margin:0;
+      min-height:100vh;
     }
+
+    /* ===== TITULO 3D ===== */
     h1{
+      margin-top:40px;
+      font-family:'Orbitron',sans-serif;
+      font-size:46px;
+      letter-spacing:3px;
       color:#ff1a1a;
-      margin-top:30px;
+      text-shadow:
+        0 2px 0 #9b0000,
+        0 4px 0 #6b0000,
+        0 6px 10px rgba(0,0,0,0.8),
+        0 0 18px rgba(255,0,0,0.7);
     }
+
+    /* ===== CONTENEDOR ===== */
     #contenedor{
-      margin:80px auto;
-      max-width:420px;
-      padding:30px;
-      border-radius:20px;
-      background:rgba(10,10,10,.85);
-      border:1px solid rgba(255,0,0,.35);
-      box-shadow:0 0 25px rgba(255,0,0,.25);
+      margin:70px auto;
+      max-width:430px;
+      padding:34px 32px;
+      border-radius:24px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(30,0,0,0.85),
+          rgba(5,0,0,0.9)
+        );
+      border:1px solid rgba(255,0,0,0.35);
+      box-shadow:
+        0 0 30px rgba(255,0,0,0.25),
+        inset 0 0 25px rgba(255,0,0,0.15);
     }
+
+    /* ===== CONTADOR ===== */
     #contador{
-      margin-bottom:15px;
-      font-size:15px;
+      font-size:16px;
+      margin-bottom:18px;
       color:#ffd700;
+      text-shadow:0 0 8px rgba(255,215,0,0.6);
     }
+
+    /* ===== BOTON PRINCIPAL ===== */
     button{
-      padding:15px 28px;
-      font-size:18px;
+      padding:16px 34px;
+      font-size:19px;
+      font-family:'Orbitron',sans-serif;
       border-radius:999px;
       border:1px solid #ff1a1a;
-      background:#1a1a1a;
+      background:
+        linear-gradient(
+          180deg,
+          #ff1a1a,
+          #a80000
+        );
       color:#fff;
       cursor:pointer;
-      margin-top:15px;
+      margin-top:18px;
+      box-shadow:
+        0 4px 0 #6b0000,
+        0 10px 20px rgba(0,0,0,0.7),
+        0 0 14px rgba(255,0,0,0.6);
+      transition:transform .15s ease, box-shadow .15s ease;
     }
+
+    button:hover{
+      transform:translateY(-1px);
+      box-shadow:
+        0 5px 0 #6b0000,
+        0 12px 24px rgba(0,0,0,0.8),
+        0 0 18px rgba(255,0,0,0.8);
+    }
+
+    button:active{
+      transform:translateY(2px);
+      box-shadow:
+        0 2px 0 #6b0000,
+        0 6px 12px rgba(0,0,0,0.8);
+    }
+
     button:disabled{
-      opacity:.5;
+      opacity:.55;
       cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
     }
+
+    /* ===== RESULTADO ===== */
     #resultado{
-      margin-top:30px;
-      font-size:19px;
-      min-height:28px;
+      margin-top:28px;
+      font-size:20px;
+      min-height:30px;
+      text-shadow:0 0 10px rgba(0,0,0,0.8);
     }
-    .ok{color:#00ff77}
-    .no{color:#ff3b3b}
+
+    .ok{
+      color:#00ff77;
+      text-shadow:
+        0 0 8px rgba(0,255,120,0.8),
+        0 0 16px rgba(0,255,120,0.5);
+    }
+
+    .no{
+      color:#ff3b3b;
+      text-shadow:
+        0 0 8px rgba(255,0,0,0.8),
+        0 0 16px rgba(255,0,0,0.5);
+    }
+
+    .id-jugada{
+      margin-top:10px;
+      font-size:13px;
+      color:#ffd700;
+      opacity:.85;
+    }
+
+    /* ===== BOTONES SECUNDARIOS ===== */
     #actualizar{
       display:none;
       background:transparent;
       border:2px solid #ff1a1a;
+      box-shadow:0 0 12px rgba(255,0,0,0.5);
     }
+
     #whats{
       display:none;
-      background:#00c853;
-      color:#000;
+      background:
+        linear-gradient(180deg,#00e676,#00a84f);
+      color:#003300;
       border:none;
+      box-shadow:
+        0 4px 0 #007a38,
+        0 8px 18px rgba(0,0,0,0.6);
     }
+
     #leyenda{
       display:none;
-      margin-top:12px;
+      margin-top:14px;
       font-size:14px;
       color:#ffd700;
-    }
-    .id-jugada{
-      margin-top:8px;
-      font-size:13px;
-      color:#ffd700;
+      text-shadow:0 0 8px rgba(255,215,0,0.7);
     }
   </style>
 </head>
@@ -90,7 +180,7 @@
 
   <div id="resultado"></div>
 
-  <button id="actualizar" onclick="location.reload()">🔄 Actualizar para probar otra vez</button>
+  <button id="actualizar" onclick="location.reload()">🔄 Probar otra vez</button>
 
   <button id="whats">📲 Reclamar premio</button>
 
@@ -133,28 +223,22 @@ jugarBtn.addEventListener("click", async () => {
     });
     const data = await r.json();
 
-    /* ===== BLOQUEADO ===== */
     if(!data.ok){
-      // ocultar botones
-      jugarBtn.style.display = "none";
-      actualizar.style.display = "none";
-      whats.style.display = "none";
-      leyenda.style.display = "none";
+      jugarBtn.style.display="none";
+      actualizar.style.display="none";
+      whats.style.display="none";
+      leyenda.style.display="none";
 
-      // mensaje principal
-      resultado.className = "no";
-      resultado.innerText = "🚫 Ya usaste los intentos de hoy.";
+      resultado.className="no";
+      resultado.innerText="🚫 Ya usaste los intentos de hoy.";
 
-      // mensaje secundario
       if(data.proximoIntento){
         contador.innerHTML =
           `⏱️ Podés volver a intentar el <b>${formatearFecha(data.proximoIntento)}</b>`;
       }
-
       return;
     }
 
-    /* ===== JUGADA NORMAL ===== */
     contador.innerHTML =
       `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
 
@@ -163,8 +247,8 @@ jugarBtn.addEventListener("click", async () => {
       data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
 
     if(data.ganador){
-      whats.style.display = "inline-block";
-      leyenda.style.display = "block";
+      whats.style.display="inline-block";
+      leyenda.style.display="block";
       whats.onclick = () =>
         window.open(
           "https://wa.me/5491155632400?text=Hola%20gané%20un%20premio.%20Jugada%20"+data.id,
@@ -173,15 +257,15 @@ jugarBtn.addEventListener("click", async () => {
     }
 
     if(data.intentosRestantes > 0){
-      actualizar.style.display = "inline-block";
-      jugarBtn.disabled = false;
+      actualizar.style.display="inline-block";
+      jugarBtn.disabled=false;
     } else {
-      jugarBtn.style.display = "none";
+      jugarBtn.style.display="none";
     }
 
   } catch {
-    resultado.className = "no";
-    resultado.innerText = "❌ Error de conexión.";
+    resultado.className="no";
+    resultado.innerText="❌ Error de conexión.";
   }
 });
 </script>

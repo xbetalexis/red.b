@@ -16,16 +16,12 @@
       margin: 0;
       padding: 0;
     }
-
     h1 {
       font-size: 40px;
       color: #ff1a1a;
       margin-top: 30px;
-      text-shadow:
-        0 0 6px rgba(255,0,0,0.6),
-        0 0 14px rgba(255,0,0,0.6);
+      text-shadow: 0 0 6px rgba(255,0,0,0.6),0 0 14px rgba(255,0,0,0.6);
     }
-
     .subtitulo {
       margin-top: 8px;
       font-size: 14px;
@@ -33,19 +29,15 @@
       letter-spacing: 1px;
       text-shadow: 0 0 6px rgba(255,0,0,0.35);
     }
-
     #contenedor {
       margin: 90px auto 40px;
       max-width: 420px;
       padding: 34px 30px;
       border-radius: 22px;
       background: rgba(10, 10, 10, 0.85);
-      box-shadow:
-        0 0 25px rgba(255,0,0,0.25),
-        inset 0 0 20px rgba(255,0,0,0.15);
+      box-shadow: 0 0 25px rgba(255,0,0,0.25), inset 0 0 20px rgba(255,0,0,0.15);
       border: 1px solid rgba(255,0,0,0.35);
     }
-
     input {
       padding: 14px;
       width: 85%;
@@ -56,7 +48,6 @@
       color: #eee;
       text-align: center;
     }
-
     button {
       margin-top: 22px;
       padding: 16px 30px;
@@ -68,7 +59,6 @@
       cursor: pointer;
       box-shadow: 0 0 12px rgba(255,0,0,0.35);
     }
-
     button:disabled {
       background: #222;
       border-color: #555;
@@ -76,16 +66,13 @@
       cursor: not-allowed;
       box-shadow: none;
     }
-
     #resultado {
       margin-top: 24px;
       font-size: 18px;
       min-height: 28px;
     }
-
     .resultado-exito { color:#00ff77 }
     .resultado-sinpremio { color:#ff3b3b }
-
     #botonRecargar {
       margin-top: 30px;
       padding: 12px 26px;
@@ -98,7 +85,6 @@
       display: none;
       box-shadow: 0 0 10px rgba(255,0,0,0.4);
     }
-
     .id-jugada {
       margin-top: 10px;
       font-size: 13px;
@@ -119,53 +105,31 @@
   <input type="text" placeholder="Campo decorativo" disabled />
   <br/>
   <button id="botonTirar">🎰 PROBAR SUERTE</button>
-
   <div id="resultado"></div>
-
-  <button id="botonRecargar" onclick="location.reload()">
-    👉 Volver a intentar
-  </button>
+  <button id="botonRecargar" onclick="location.reload()">👉 Volver a intentar</button>
 </div>
 
 <script>
-  /* ===============================
-     CONFIGURACIÓN DE PREMIOS
-     =============================== */
-  const resultados = [
-    { texto: "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", clase: "resultado-sinpremio", prob: 80 },
-    { texto: "🎁 GANASTE 100 FICHAS", clase: "resultado-exito", prob: 15 },
-    { texto: "🎉 GANASTE 300 FICHAS", clase: "resultado-exito", prob: 5 }
-  ];
-
-  function generarIDJugada() {
-    return "RB-" + Date.now().toString().slice(-6);
-  }
-
-  function elegirResultado() {
-    let r = Math.random() * 100;
-    let acumulado = 0;
-    for (let item of resultados) {
-      acumulado += item.prob;
-      if (r < acumulado) return item;
-    }
-  }
-
-  const boton = document.getElementById("botonTirar");
-  const resultadoDiv = document.getElementById("resultado");
-  const botonRecargar = document.getElementById("botonRecargar");
-
-  boton.addEventListener("click", () => {
-    const res = elegirResultado();
-    const id = generarIDJugada();
-
-    resultadoDiv.className = res.clase;
-    resultadoDiv.innerHTML =
-      res.texto +
-      `<div class="id-jugada">🆔 Jugada: <b>${id}</b></div>`;
-
-    boton.disabled = true;
-    botonRecargar.style.display = "inline-block";
-  });
+(function(){
+var _r=[{t:"❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA",c:"resultado-sinpremio",p:80},{t:"🎁 GANASTE 100 FICHAS",c:"resultado-exito",p:15},{t:"🎉 GANASTE 300 FICHAS",c:"resultado-exito",p:5}];
+function _id(){return"RB-"+Date.now().toString().slice(-6);}
+function _pick(){
+var x=Math.random()*100,a=0;
+for(var i=0;i<_r.length;i++){
+a+=_r[i].p;
+if(x<a)return _r[i];
+}}
+var b=document.getElementById("botonTirar"),
+r=document.getElementById("resultado"),
+rc=document.getElementById("botonRecargar");
+b.addEventListener("click",function(){
+var o=_pick(),i=_id();
+r.className=o.c;
+r.innerHTML=o.t+'<div class="id-jugada">🆔 Jugada: <b>'+i+'</b></div>';
+b.disabled=true;
+rc.style.display="inline-block";
+});
+})();
 </script>
 
 </body>

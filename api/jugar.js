@@ -1,88 +1,73 @@
-let intentosPorDispositivo = {};
-
-const MAX_INTENTOS = 3;
-const BLOQUEO_MS = 24 * 60 * 60 * 1000; // 24 horas
-
 export default function handler(req, res) {
-  const { deviceId } = req.body || {};
+  if (req.method !== "POST") {
+    return res.status(405).json({ ok: false });
+  }
+
+  const { deviceId } = req.body;
 
   if (!deviceId) {
-    return res.json({
-      ok: false,
-      mensaje: "Dispositivo inválido"
-    });
+    return res.json({ ok: false });
   }
 
+  // ===== CONFIGURACIÓN =====
+  const INTENTOS_MAX = 3;
+  const PREMIO_TEXTO = "GANASTE 2.000 FICHAS (NO EXTRAÍBLE)";
+  const PROBABILIDAD_PREMIO = 3; // 3%
+
+  // ===== STORAGE SIMPLE EN MEMORIA =====
+  global.intentosPorDispositivo ??= {};
+  global.intentosPorDispositivo[deviceId] ??= {
+    intentos: 0,
+    ultimoUso: Date.now(),
+  };
+
+  const registro = global.intentosPorDispositivo[deviceId];
+
+  // ===== RESET CADA 24 HS =====
   const ahora = Date.now();
+  const VEINTICUATRO_HS = 24 * 60 * 60 * 1000;
 
-  // Inicializar dispositivo
-  if (!intentosPorDispositivo[deviceId]) {
-    intentosPorDispositivo[deviceId] = {
-      count: 0,
-      firstTime: null
-    };
+  if (ahora - registro.ultimoUso > VEINTICUATRO_HS) {
+    registro.intentos = 0;
+    registro.ultimoUso = ahora;
   }
 
-  const data = intentosPorDispositivo[deviceId];
-
-  // Reset si pasaron 24hs desde el primer intento
-  if (data.firstTime && ahora - data.firstTime >= BLOQUEO_MS) {
-    data.count = 0;
-    data.firstTime = null;
-  }
-
-  // 🚫 Bloqueo si ya usó los intentos
-  if (data.count >= MAX_INTENTOS) {
+  // ===== SIN INTENTOS =====
+  if (registro.intentos >= INTENTOS_MAX) {
     return res.json({
       ok: false,
-      mensaje: "🚫 Ya usaste los intentos de hoy.",
-      proximoIntento: new Date(data.firstTime + BLOQUEO_MS).toISOString()
+      proximoIntento: registro.ultimoUso + VEINTICUATRO_HS,
     });
   }
 
-  // 👉 Registrar intento real
-  data.count++;
-  if (data.count === 1) {
-    data.firstTime = ahora;
+  // ===== CONSUMIR INTENTO =====
+  registro.intentos += 1;
+  registro.ultimoUso = ahora;
+
+  const intentosRestantes = INTENTOS_MAX - registro.intentos;
+
+  // ===== PROBABILIDAD =====
+  const chance = Math.floor(Math.random() * 100) + 1;
+
+  let ganador = false;
+  let premio = "❌ SIN PREMIO";
+
+  if (chance <= PROBABILIDAD_PREMIO) {
+    ganador = true;
+    premio = PREMIO_TEXTO;
   }
 
-  // 🎁 PREMIOS — 80 / 15 / 5 (SUMA 100)
-  const premios = [
-    {
-      t: "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA",
-      p: 80,
-      g: false
-    },
-    {
-      t: "🎁 GANASTE 3.000 FICHAS (NO EXTRAÍBLE)",
-      p: 15,
-      g: true
-    },
-    {
-      t: "🎉 GANASTE 5.000 FICHAS (NO EXTRAÍBLE)",
-      p: 5,
-      g: true
-    }
-  ];
+  // ===== CÓDIGO DE REFERENCIA =====
+  const ref =
+    "RB-" +
+    Math.random().toString(36).substring(2, 8).toUpperCase();
 
-  // 🎲 Sorteo correcto
-  let r = Math.random() * 100;
-  let acc = 0;
-  let resultado = premios[0];
-
-  for (const pr of premios) {
-    acc += pr.p;
-    if (r < acc) {
-      resultado = pr;
-      break;
-    }
-  }
-
+  // ===== RESPUESTA =====
   return res.json({
     ok: true,
-    ganador: resultado.g,
-    premio: resultado.t,
-    id: "RB-" + Date.now().toString().slice(-6),
-    intentosRestantes: MAX_INTENTOS - data.count
+    ganador,
+    premio,
+    id: ref,
+    intentosRestantes,
   });
 }

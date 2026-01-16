@@ -15,7 +15,10 @@
       text-align:center;
       margin:0;
     }
-    h1{color:#ff1a1a;margin-top:30px}
+    h1{
+      color:#ff1a1a;
+      margin-top:30px;
+    }
     #contenedor{
       margin:80px auto;
       max-width:420px;
@@ -23,6 +26,7 @@
       border-radius:20px;
       background:rgba(10,10,10,.85);
       border:1px solid rgba(255,0,0,.35);
+      box-shadow:0 0 25px rgba(255,0,0,.25);
     }
     #contador{
       margin-bottom:15px;
@@ -39,10 +43,14 @@
       cursor:pointer;
       margin-top:15px;
     }
-    button:disabled{opacity:.5}
+    button:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+    }
     #resultado{
-      margin-top:20px;
-      font-size:18px;
+      margin-top:30px;
+      font-size:19px;
+      min-height:28px;
     }
     .ok{color:#00ff77}
     .no{color:#ff3b3b}
@@ -63,7 +71,11 @@
       font-size:14px;
       color:#ffd700;
     }
-    .id-jugada{margin-top:8px;font-size:13px}
+    .id-jugada{
+      margin-top:8px;
+      font-size:13px;
+      color:#ffd700;
+    }
   </style>
 </head>
 
@@ -95,12 +107,12 @@ function getDeviceId(){
   return id;
 }
 
-const jugarBtn = document.getElementById("jugar");
-const resultado = document.getElementById("resultado");
-const contador = document.getElementById("contador");
+const jugarBtn   = document.getElementById("jugar");
+const resultado  = document.getElementById("resultado");
+const contador   = document.getElementById("contador");
 const actualizar = document.getElementById("actualizar");
-const whats = document.getElementById("whats");
-const leyenda = document.getElementById("leyenda");
+const whats      = document.getElementById("whats");
+const leyenda    = document.getElementById("leyenda");
 
 function formatearFecha(iso){
   const d = new Date(iso);
@@ -110,6 +122,7 @@ function formatearFecha(iso){
 
 jugarBtn.addEventListener("click", async () => {
   jugarBtn.disabled = true;
+  resultado.className = "";
   resultado.innerText = "⏳ Procesando...";
 
   try {
@@ -120,11 +133,19 @@ jugarBtn.addEventListener("click", async () => {
     });
     const data = await r.json();
 
-    // 🚫 BLOQUEADO
+    /* ===== BLOQUEADO ===== */
     if(!data.ok){
+      // ocultar botones
+      jugarBtn.style.display = "none";
+      actualizar.style.display = "none";
+      whats.style.display = "none";
+      leyenda.style.display = "none";
+
+      // mensaje principal
       resultado.className = "no";
       resultado.innerText = "🚫 Ya usaste los intentos de hoy.";
 
+      // mensaje secundario
       if(data.proximoIntento){
         contador.innerHTML =
           `⏱️ Podés volver a intentar el <b>${formatearFecha(data.proximoIntento)}</b>`;
@@ -133,7 +154,7 @@ jugarBtn.addEventListener("click", async () => {
       return;
     }
 
-    // JUGADA NORMAL
+    /* ===== JUGADA NORMAL ===== */
     contador.innerHTML =
       `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
 
@@ -142,8 +163,8 @@ jugarBtn.addEventListener("click", async () => {
       data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
 
     if(data.ganador){
-      whats.style.display="inline-block";
-      leyenda.style.display="block";
+      whats.style.display = "inline-block";
+      leyenda.style.display = "block";
       whats.onclick = () =>
         window.open(
           "https://wa.me/5491155632400?text=Hola%20gané%20un%20premio.%20Jugada%20"+data.id,
@@ -152,7 +173,10 @@ jugarBtn.addEventListener("click", async () => {
     }
 
     if(data.intentosRestantes > 0){
-      actualizar.style.display="inline-block";
+      actualizar.style.display = "inline-block";
+      jugarBtn.disabled = false;
+    } else {
+      jugarBtn.style.display = "none";
     }
 
   } catch {

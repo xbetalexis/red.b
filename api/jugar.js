@@ -1,9 +1,7 @@
 let intentosPorIP = {};
-let ganadoresTotales = 0;
 
 const MAX_INTENTOS = 3;
-const BLOQUEO_MS = 24 * 60 * 60 * 1000; // 24 horas
-const LIMITE_GANADORES = 50;
+const BLOQUEO_MS = 24 * 60 * 60 * 1000; // 24 hs
 
 export default function handler(req, res) {
   const ip =
@@ -13,26 +11,25 @@ export default function handler(req, res) {
 
   const ahora = Date.now();
 
-  // Inicializar IP
+  // Inicializar si no existe
   if (!intentosPorIP[ip]) {
     intentosPorIP[ip] = {
       count: 0,
-      firstTime: ahora
+      firstClickTime: null
     };
   }
 
   const data = intentosPorIP[ip];
 
-  // Si pasó el bloqueo, reset
-  if (ahora - data.firstTime >= BLOQUEO_MS) {
+  // Si ya empezó a jugar y pasó el bloqueo → reset
+  if (data.firstClickTime && ahora - data.firstClickTime >= BLOQUEO_MS) {
     data.count = 0;
-    data.firstTime = ahora;
+    data.firstClickTime = null;
   }
 
-  // 🚫 Límite alcanzado
+  // 🚫 Si ya usó los 3 intentos
   if (data.count >= MAX_INTENTOS) {
-    const proximo = new Date(data.firstTime + BLOQUEO_MS);
-
+    const proximo = new Date(data.firstClickTime + BLOQUEO_MS);
     return res.json({
       ok: false,
       mensaje: "🚫 Ya usaste los intentos de hoy.",
@@ -40,10 +37,15 @@ export default function handler(req, res) {
     });
   }
 
-  // Registrar intento
+  // 👉 REGISTRAR INTENTO (ACÁ, NO ANTES)
   data.count++;
 
-  // Premios ocultos
+  // Si es el primer clic del ciclo, marcar hora
+  if (!data.firstClickTime) {
+    data.firstClickTime = ahora;
+  }
+
+  // 🎁 Premios
   const premios = [
     { texto: "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", prob: 80, ganador: false },
     { texto: "🎁 GANASTE 100 FICHAS", prob: 15, ganador: true },
@@ -61,10 +63,6 @@ export default function handler(req, res) {
       resultado = p;
       break;
     }
-  }
-
-  if (resultado.ganador && ganadoresTotales < LIMITE_GANADORES) {
-    ganadoresTotales++;
   }
 
   return res.json({

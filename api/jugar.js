@@ -2,10 +2,10 @@ let intentosPorIP = {};
 let ganadoresTotales = 0;
 
 const MAX_INTENTOS = 3;
-const BLOQUEO_MS = 24*60*60*1000;
+const BLOQUEO_MS = 24 * 60 * 60 * 1000; // 24 horas
 const LIMITE_GANADORES = 50;
 
-export default function handler(req,res){
+export default function handler(req, res) {
   const ip =
     req.headers["x-forwarded-for"]?.split(",")[0] ||
     req.socket.remoteAddress ||
@@ -13,47 +13,65 @@ export default function handler(req,res){
 
   const ahora = Date.now();
 
-  if(!intentosPorIP[ip]){
-    intentosPorIP[ip]={count:0,first:ahora};
+  // Inicializar IP
+  if (!intentosPorIP[ip]) {
+    intentosPorIP[ip] = {
+      count: 0,
+      firstTime: ahora
+    };
   }
 
-  const d = intentosPorIP[ip];
+  const data = intentosPorIP[ip];
 
-  if(ahora - d.first > BLOQUEO_MS){
-    d.count=0;
-    d.first=ahora;
+  // Si pasó el bloqueo, reset
+  if (ahora - data.firstTime >= BLOQUEO_MS) {
+    data.count = 0;
+    data.firstTime = ahora;
   }
 
-  if(d.count >= MAX_INTENTOS){
+  // 🚫 Límite alcanzado
+  if (data.count >= MAX_INTENTOS) {
+    const proximo = new Date(data.firstTime + BLOQUEO_MS);
+
     return res.json({
-      ok:false,
-      mensaje:"🚫 Ya intentaste en este dispositivo. Volvé luego de las 24hs."
+      ok: false,
+      mensaje: "🚫 Ya usaste los intentos de hoy.",
+      proximoIntento: proximo.toISOString()
     });
   }
 
-  d.count++;
+  // Registrar intento
+  data.count++;
 
-  const premios=[
-    {t:"❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA",p:80,g:false},
-    {t:"🎁 GANASTE 100 FICHAS",p:15,g:true},
-    {t:"🎉 GANASTE 300 FICHAS",p:5,g:true}
+  // Premios ocultos
+  const premios = [
+    { texto: "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", prob: 80, ganador: false },
+    { texto: "🎁 GANASTE 100 FICHAS", prob: 15, ganador: true },
+    { texto: "🎉 GANASTE 300 FICHAS", prob: 5, ganador: true }
   ];
 
-  let r=Math.random()*100,a=0,resu=premios[0];
-  for(const pr of premios){
-    a+=pr.p;
-    if(r<a){resu=pr;break;}
+  // Sorteo
+  let r = Math.random() * 100;
+  let acc = 0;
+  let resultado = premios[0];
+
+  for (const p of premios) {
+    acc += p.prob;
+    if (r < acc) {
+      resultado = p;
+      break;
+    }
   }
 
-  if(resu.g && ganadoresTotales < LIMITE_GANADORES){
+  if (resultado.ganador && ganadoresTotales < LIMITE_GANADORES) {
     ganadoresTotales++;
   }
 
   return res.json({
-    ok:true,
-    ganador:resu.g,
-    premio:resu.t,
-    id:"RB-"+Date.now().toString().slice(-6),
-    intentosRestantes: MAX_INTENTOS - d.count
+    ok: true,
+    ganador: resultado.ganador,
+    premio: resultado.texto,
+    id: "RB-" + Date.now().toString().slice(-6),
+    intentosRestantes: MAX_INTENTOS - data.count
   });
 }

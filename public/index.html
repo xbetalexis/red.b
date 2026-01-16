@@ -5,20 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SORTEO PRO</title>
 
-  <!-- FUENTES -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600&display=swap" rel="stylesheet">
 
   <style>
     body{
-      background:
-        radial-gradient(circle at top, #2b0000, #000 70%),
-        repeating-linear-gradient(
-          45deg,
-          rgba(255,0,0,0.04),
-          rgba(255,0,0,0.04) 2px,
-          transparent 2px,
-          transparent 6px
-        );
+      background:radial-gradient(circle at top,#2b0000,#000 70%);
       font-family:'Rajdhani',sans-serif;
       color:#fff;
       text-align:center;
@@ -26,7 +17,6 @@
       min-height:100vh;
     }
 
-    /* ===== TITULO 3D ===== */
     h1{
       margin-top:40px;
       font-family:'Orbitron',sans-serif;
@@ -40,131 +30,74 @@
         0 0 18px rgba(255,0,0,0.7);
     }
 
-    /* ===== CONTENEDOR ===== */
     #contenedor{
-      margin:70px auto;
+      margin:70px auto 25px;
       max-width:430px;
       padding:34px 32px;
       border-radius:24px;
-      background:
-        linear-gradient(
-          180deg,
-          rgba(30,0,0,0.85),
-          rgba(5,0,0,0.9)
-        );
-      border:1px solid rgba(255,0,0,0.35);
+      background:rgba(10,10,10,.85);
+      border:1px solid rgba(255,0,0,.35);
       box-shadow:
-        0 0 30px rgba(255,0,0,0.25),
-        inset 0 0 25px rgba(255,0,0,0.15);
+        0 0 30px rgba(255,0,0,.25),
+        inset 0 0 25px rgba(255,0,0,.15);
     }
 
-    /* ===== CONTADOR ===== */
     #contador{
       font-size:16px;
       margin-bottom:18px;
       color:#ffd700;
-      text-shadow:0 0 8px rgba(255,215,0,0.6);
+      text-shadow:0 0 8px rgba(255,215,0,.6);
     }
 
-    /* ===== BOTON PRINCIPAL ===== */
     button{
       padding:16px 34px;
       font-size:19px;
       font-family:'Orbitron',sans-serif;
       border-radius:999px;
       border:1px solid #ff1a1a;
-      background:
-        linear-gradient(
-          180deg,
-          #ff1a1a,
-          #a80000
-        );
+      background:linear-gradient(180deg,#ff1a1a,#a80000);
       color:#fff;
       cursor:pointer;
       margin-top:18px;
       box-shadow:
         0 4px 0 #6b0000,
-        0 10px 20px rgba(0,0,0,0.7),
-        0 0 14px rgba(255,0,0,0.6);
-      transition:transform .15s ease, box-shadow .15s ease;
+        0 10px 20px rgba(0,0,0,.7),
+        0 0 14px rgba(255,0,0,.6);
     }
 
-    button:hover{
-      transform:translateY(-1px);
-      box-shadow:
-        0 5px 0 #6b0000,
-        0 12px 24px rgba(0,0,0,0.8),
-        0 0 18px rgba(255,0,0,0.8);
-    }
-
-    button:active{
-      transform:translateY(2px);
-      box-shadow:
-        0 2px 0 #6b0000,
-        0 6px 12px rgba(0,0,0,0.8);
-    }
-
-    button:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      box-shadow:none;
-      transform:none;
-    }
-
-    /* ===== RESULTADO ===== */
     #resultado{
       margin-top:28px;
       font-size:20px;
       min-height:30px;
-      text-shadow:0 0 10px rgba(0,0,0,0.8);
     }
 
-    .ok{
-      color:#00ff77;
-      text-shadow:
-        0 0 8px rgba(0,255,120,0.8),
-        0 0 16px rgba(0,255,120,0.5);
-    }
+    .ok{color:#00ff77}
+    .no{color:#ff3b3b}
 
-    .no{
-      color:#ff3b3b;
-      text-shadow:
-        0 0 8px rgba(255,0,0,0.8),
-        0 0 16px rgba(255,0,0,0.5);
-    }
-
-    .id-jugada{
-      margin-top:10px;
-      font-size:13px;
-      color:#ffd700;
-      opacity:.85;
-    }
-
-    /* ===== BOTONES SECUNDARIOS ===== */
-    #actualizar{
-      display:none;
-      background:transparent;
-      border:2px solid #ff1a1a;
-      box-shadow:0 0 12px rgba(255,0,0,0.5);
-    }
-
-    #whats{
-      display:none;
-      background:
-        linear-gradient(180deg,#00e676,#00a84f);
-      color:#003300;
-      border:none;
-      box-shadow:
-        0 4px 0 #007a38,
-        0 8px 18px rgba(0,0,0,0.6);
-    }
-
+    #actualizar,
+    #whats,
     #leyenda{
       display:none;
-      margin-top:14px;
-      font-size:14px;
+    }
+
+    /* 🔹 BLOQUE INFORMATIVO */
+    #info-clientes{
+      max-width:430px;
+      margin:0 auto;
+      padding:18px 24px;
+      font-size:13px;
+      line-height:1.6;
+      color:#d0b060;
+      opacity:.85;
+      text-shadow:0 0 6px rgba(0,0,0,.6);
+    }
+
+    #info-clientes span{
+      display:block;
+      margin-bottom:6px;
+      font-weight:600;
+      letter-spacing:.5px;
       color:#ffd700;
-      text-shadow:0 0 8px rgba(255,215,0,0.7);
     }
   </style>
 </head>
@@ -175,16 +108,15 @@
 
 <div id="contenedor">
   <div id="contador">Tenés <b>3</b> intentos disponibles</div>
-
   <button id="jugar">🎰 PROBAR SUERTE</button>
-
   <div id="resultado"></div>
+</div>
 
-  <button id="actualizar" onclick="location.reload()">🔄 Probar otra vez</button>
-
-  <button id="whats">📲 Reclamar premio</button>
-
-  <div id="leyenda">📸 Sacá captura y enviala a la línea</div>
+<div id="info-clientes">
+  <span>Información para clientes</span>
+  Este sistema de sorteos es un beneficio adicional para clientes activos.<br>
+  Los premios pueden variar y están sujetos a disponibilidad.<br>
+  Cada intento queda registrado automáticamente.
 </div>
 
 <script>
@@ -197,12 +129,9 @@ function getDeviceId(){
   return id;
 }
 
-const jugarBtn   = document.getElementById("jugar");
-const resultado  = document.getElementById("resultado");
-const contador   = document.getElementById("contador");
-const actualizar = document.getElementById("actualizar");
-const whats      = document.getElementById("whats");
-const leyenda    = document.getElementById("leyenda");
+const jugarBtn = document.getElementById("jugar");
+const resultado = document.getElementById("resultado");
+const contador = document.getElementById("contador");
 
 function formatearFecha(iso){
   const d = new Date(iso);
@@ -212,61 +141,32 @@ function formatearFecha(iso){
 
 jugarBtn.addEventListener("click", async () => {
   jugarBtn.disabled = true;
-  resultado.className = "";
   resultado.innerText = "⏳ Procesando...";
 
-  try {
-    const r = await fetch("/api/jugar",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ deviceId: getDeviceId() })
-    });
-    const data = await r.json();
+  const r = await fetch("/api/jugar",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ deviceId: getDeviceId() })
+  });
+  const data = await r.json();
 
-    if(!data.ok){
-      jugarBtn.style.display="none";
-      actualizar.style.display="none";
-      whats.style.display="none";
-      leyenda.style.display="none";
-
-      resultado.className="no";
-      resultado.innerText="🚫 Ya usaste los intentos de hoy.";
-
-      if(data.proximoIntento){
-        contador.innerHTML =
-          `⏱️ Podés volver a intentar el <b>${formatearFecha(data.proximoIntento)}</b>`;
-      }
-      return;
-    }
-
-    contador.innerHTML =
-      `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
-
-    resultado.className = data.ganador ? "ok" : "no";
-    resultado.innerHTML =
-      data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
-
-    if(data.ganador){
-      whats.style.display="inline-block";
-      leyenda.style.display="block";
-      whats.onclick = () =>
-        window.open(
-          "https://wa.me/5491155632400?text=Hola%20gané%20un%20premio.%20Jugada%20"+data.id,
-          "_blank"
-        );
-    }
-
-    if(data.intentosRestantes > 0){
-      actualizar.style.display="inline-block";
-      jugarBtn.disabled=false;
-    } else {
-      jugarBtn.style.display="none";
-    }
-
-  } catch {
+  if(!data.ok){
+    jugarBtn.style.display="none";
     resultado.className="no";
-    resultado.innerText="❌ Error de conexión.";
+    resultado.innerText="🚫 Ya usaste los intentos de hoy.";
+    if(data.proximoIntento){
+      contador.innerHTML =
+        `⏱️ Podés volver a intentar el <b>${formatearFecha(data.proximoIntento)}</b>`;
+    }
+    return;
   }
+
+  contador.innerHTML =
+    `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
+
+  resultado.className = data.ganador ? "ok" : "no";
+  resultado.innerHTML = data.premio;
+  jugarBtn.disabled=false;
 });
 </script>
 

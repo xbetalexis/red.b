@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CODIGOS RULETEROS</title>
+  <title>SORTEO AUTOMÁTICO</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
 
@@ -21,9 +21,7 @@
       font-size: 40px;
       color: #ff1a1a;
       margin-top: 30px;
-      text-shadow:
-        0 0 6px rgba(255,0,0,0.6),
-        0 0 14px rgba(255,0,0,0.6);
+      text-shadow: 0 0 6px rgba(255,0,0,0.6),0 0 14px rgba(255,0,0,0.6);
     }
 
     .subtitulo {
@@ -40,9 +38,7 @@
       padding: 34px 30px;
       border-radius: 22px;
       background: rgba(10, 10, 10, 0.85);
-      box-shadow:
-        0 0 25px rgba(255,0,0,0.25),
-        inset 0 0 20px rgba(255,0,0,0.15);
+      box-shadow: 0 0 25px rgba(255,0,0,0.25), inset 0 0 20px rgba(255,0,0,0.15);
       border: 1px solid rgba(255,0,0,0.35);
     }
 
@@ -55,16 +51,6 @@
       background: #111;
       color: #eee;
       text-align: center;
-    }
-
-    input::placeholder {
-      color: #777;
-    }
-
-    input:disabled {
-      background: #1c1c1c;
-      color: #666;
-      cursor: not-allowed;
     }
 
     button {
@@ -95,8 +81,6 @@
 
     .resultado-exito { color:#00ff77 }
     .resultado-sinpremio { color:#ff3b3b }
-    .resultado-aviso { color:#ffb000 }
-    .resultado-error { color:#ff1a1a }
 
     #botonRecargar {
       margin-top: 30px;
@@ -111,7 +95,6 @@
       box-shadow: 0 0 10px rgba(255,0,0,0.4);
     }
 
-    /* 🔹 ID de jugada */
     .id-jugada {
       margin-top: 10px;
       font-size: 13px;
@@ -123,129 +106,60 @@
 
 <body>
 
-<h1>CODIGOS RULETEROS</h1>
+<h1>SORTEO AUTOMÁTICO</h1>
 <div class="subtitulo">
-  SI TE SALE PREMIO SACÁ CAPTURA Y ENVIÁLA A LA LÍNEA DE CARGAS
+  TOCÁ EL BOTÓN Y MIRÁ SI TENÉS PREMIO
 </div>
 
 <div id="contenedor">
-  <input type="text" id="codigo" placeholder="Ingresá tu código"/>
+  <input type="text" placeholder="Campo decorativo" disabled />
   <br/>
-  <button id="botonTirar" onclick="tirar()">🎰 PROBAR SUERTE</button>
+  <button id="botonTirar">🎰 PROBAR SUERTE</button>
 
   <div id="resultado"></div>
 
   <button id="botonRecargar" onclick="location.reload()">
-    👉 Presioná acá para colocar otro código
+    👉 Volver a intentar
   </button>
 </div>
 
 <script>
-  const usados = JSON.parse(localStorage.getItem('usados') || '{}');
+  // 🔹 RESULTADOS AUTOMÁTICOS (AJUSTÁ ACÁ)
+  const resultados = [
+    { texto: "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", clase: "resultado-sinpremio", prob: 80 },
+    { texto: "🎁 GANASTE 100 FICHAS", clase: "resultado-exito", prob: 15 },
+    { texto: "🎉 GANASTE 300 FICHAS", clase: "resultado-exito", prob: 5 }
+  ];
 
-  // 🔹 ID DE JUGADA
-  function generarIDJugada() {
+  function generarID() {
     const f = new Date();
-    const d = String(f.getDate()).padStart(2, '0');
-    const m = String(f.getMonth()+1).padStart(2, '0');
-    const y = String(f.getFullYear()).slice(-2);
-    const r = Math.floor(1000 + Math.random() * 9000);
-    return `RB-${d}${m}${y}-${r}`;
+    return "RB-" + f.getTime().toString().slice(-6);
   }
 
-  function obtenerIDJugada() {
-    let id = localStorage.getItem("idJugada");
-    if (!id) {
-      id = generarIDJugada();
-      localStorage.setItem("idJugada", id);
-    }
-    return id;
-  }
-
-  function setFirstUse(codigo) {
-    const key = `firstUsed_${codigo}`;
-    if (!localStorage.getItem(key)) {
-      localStorage.setItem(key, new Date().toISOString());
+  function elegirResultado() {
+    let r = Math.random() * 100;
+    let acc = 0;
+    for (let item of resultados) {
+      acc += item.prob;
+      if (r < acc) return item;
     }
   }
 
-  function getFirstUse(codigo) {
-    return localStorage.getItem(`firstUsed_${codigo}`);
-  }
+  const boton = document.getElementById("botonTirar");
+  const resultadoDiv = document.getElementById("resultado");
+  const recargar = document.getElementById("botonRecargar");
 
-  function formatFecha(iso) {
-    const d = new Date(iso);
-    const pad = n => String(n).padStart(2, '0');
-    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
+  boton.addEventListener("click", () => {
+    const res = elegirResultado();
+    const id = generarID();
 
-  function bloquearTodo() {
-    document.getElementById("codigo").disabled = true;
-    document.getElementById("botonTirar").disabled = true;
-    document.getElementById("botonRecargar").style.display = "inline-block";
-  }
+    resultadoDiv.className = res.clase;
+    resultadoDiv.innerHTML =
+      res.texto + `<div class="id-jugada">🆔 Jugada: <b>${id}</b></div>`;
 
-  function tirar() {
-    const codigoInput = document.getElementById("codigo");
-    const resultado = document.getElementById("resultado");
-    const codigo = codigoInput.value.trim().toUpperCase();
-    const idJugada = obtenerIDJugada(); // 🔹 ID DE JUGADA
-
-    if (!codigo) {
-      resultado.className = "resultado-aviso";
-      resultado.innerText = "⚠️ Ingresá un código.";
-      return;
-    }
-
-    if (usados[codigo]) {
-      const first = getFirstUse(codigo);
-      resultado.className = "resultado-aviso";
-      resultado.innerHTML =
-        `🚫 Ya usaste este código en este dispositivo.<br>` +
-        `🕒 Primera vez: <b>${formatFecha(first)}</b>` +
-        `<div class="id-jugada">🆔 Jugada: <b>${idJugada}</b></div>`;
-      bloquearTodo();
-      return;
-    }
-
-    fetch('/api/verificar-codigo', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ codigo })
-    })
-    .then(r => r.json())
-    .then(data => {
-
-      if (data.valido === true) {
-        if ((data.mensaje || "").toLowerCase().includes("sin premio")) {
-          resultado.className = "resultado-sinpremio";
-          resultado.innerText = "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA";
-        } else {
-          resultado.className = "resultado-exito";
-          resultado.innerText = "✅ " + data.mensaje;
-        }
-
-        usados[codigo] = true;
-        localStorage.setItem("usados", JSON.stringify(usados));
-        setFirstUse(codigo);
-
-        resultado.innerHTML += `<div class="id-jugada">🆔 Jugada: <b>${idJugada}</b></div>`;
-
-      } else {
-        resultado.className = "resultado-error";
-        resultado.innerText = data.mensaje || "❌ Código inválido.";
-        resultado.innerHTML += `<div class="id-jugada">🆔 Jugada: <b>${idJugada}</b></div>`;
-      }
-
-      bloquearTodo();
-    })
-    .catch(() => {
-      resultado.className = "resultado-error";
-      resultado.innerText = "❌ Error al verificar el código.";
-      resultado.innerHTML += `<div class="id-jugada">🆔 Jugada: <b>${idJugada}</b></div>`;
-      bloquearTodo();
-    });
-  }
+    boton.disabled = true;
+    recargar.style.display = "inline-block";
+  });
 </script>
 
 </body>

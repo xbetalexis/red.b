@@ -37,23 +37,30 @@ export default function handler(req, res){
   d.count++;
   if(d.count === 1) d.firstTime = ahora;
 
+  // 🎁 PREMIOS CONFIGURADOS
   const premios = [
     { t:"❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", p:80, g:false },
-    { t:"🎁 GANASTE 100 FICHAS", p:15, g:true },
-    { t:"🎉 GANASTE 300 FICHAS", p:5, g:true }
+    { t:"🎁 GANASTE 3.000 FICHAS (NO EXTRAÍBLE)", p:15, g:true },
+    { t:"🎉 GANASTE 5.000 FICHAS (NO EXTRAÍBLE)", p:5, g:true }
   ];
 
-  let r=Math.random()*100,a=0,resu=premios[0];
+  let r = Math.random() * 100;
+  let acc = 0;
+  let resu = premios[0];
+
   for(const pr of premios){
-    a+=pr.p;
-    if(r<a){resu=pr;break;}
+    acc += pr.p;
+    if(r < acc){
+      resu = pr;
+      break;
+    }
   }
 
   return res.json({
     ok:true,
     ganador:resu.g,
     premio:resu.t,
-    id:"RB-"+Date.now().toString().slice(-6),
+    id:"RB-" + Date.now().toString().slice(-6),
     intentosRestantes: MAX_INTENTOS - d.count
   });
 }

@@ -1,75 +1,59 @@
-let intentosPorIP = {};
+let intentosPorDispositivo = {};
 
 const MAX_INTENTOS = 3;
-const BLOQUEO_MS = 24 * 60 * 60 * 1000; // 24 hs
+const BLOQUEO_MS = 24 * 60 * 60 * 1000;
 
-export default function handler(req, res) {
-  const ip =
-    req.headers["x-forwarded-for"]?.split(",")[0] ||
-    req.socket.remoteAddress ||
-    "ip";
+export default function handler(req, res){
+  const { deviceId } = req.body || {};
+
+  if(!deviceId){
+    return res.json({ ok:false, mensaje:"Dispositivo inválido" });
+  }
 
   const ahora = Date.now();
 
-  // Inicializar IP
-  if (!intentosPorIP[ip]) {
-    intentosPorIP[ip] = {
+  if(!intentosPorDispositivo[deviceId]){
+    intentosPorDispositivo[deviceId] = {
       count: 0,
-      firstClickTime: null
+      firstTime: null
     };
   }
 
-  const data = intentosPorIP[ip];
+  const d = intentosPorDispositivo[deviceId];
 
-  // Reset si ya pasó el bloqueo
-  if (data.firstClickTime && ahora - data.firstClickTime >= BLOQUEO_MS) {
-    data.count = 0;
-    data.firstClickTime = null;
+  if(d.firstTime && ahora - d.firstTime >= BLOQUEO_MS){
+    d.count = 0;
+    d.firstTime = null;
   }
 
-  // 🚫 BLOQUEO SOLO CUANDO INTENTA EL 4°
-  if (data.count >= MAX_INTENTOS) {
-    const proximo = new Date(data.firstClickTime + BLOQUEO_MS);
+  if(d.count >= MAX_INTENTOS){
     return res.json({
-      ok: false,
-      mensaje: "🚫 Ya usaste los intentos de hoy.",
-      proximoIntento: proximo.toISOString()
+      ok:false,
+      mensaje:"🚫 Ya usaste los intentos de hoy.",
+      proximoIntento: new Date(d.firstTime + BLOQUEO_MS).toISOString()
     });
   }
 
-  // 👉 REGISTRAR INTENTO REAL
-  data.count++;
+  d.count++;
+  if(d.count === 1) d.firstTime = ahora;
 
-  // Guardar hora SOLO en el primer intento
-  if (data.count === 1) {
-    data.firstClickTime = ahora;
-  }
-
-  // 🎁 Premios
   const premios = [
-    { texto: "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", prob: 80, ganador: false },
-    { texto: "🎁 GANASTE 100 FICHAS", prob: 15, ganador: true },
-    { texto: "🎉 GANASTE 300 FICHAS", prob: 5, ganador: true }
+    { t:"❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", p:80, g:false },
+    { t:"🎁 GANASTE 100 FICHAS", p:15, g:true },
+    { t:"🎉 GANASTE 300 FICHAS", p:5, g:true }
   ];
 
-  // Sorteo
-  let r = Math.random() * 100;
-  let acc = 0;
-  let resultado = premios[0];
-
-  for (const p of premios) {
-    acc += p.prob;
-    if (r < acc) {
-      resultado = p;
-      break;
-    }
+  let r=Math.random()*100,a=0,resu=premios[0];
+  for(const pr of premios){
+    a+=pr.p;
+    if(r<a){resu=pr;break;}
   }
 
   return res.json({
-    ok: true,
-    ganador: resultado.ganador,
-    premio: resultado.texto,
-    id: "RB-" + Date.now().toString().slice(-6),
-    intentosRestantes: MAX_INTENTOS - data.count
+    ok:true,
+    ganador:resu.g,
+    premio:resu.t,
+    id:"RB-"+Date.now().toString().slice(-6),
+    intentosRestantes: MAX_INTENTOS - d.count
   });
 }

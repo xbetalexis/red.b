@@ -24,7 +24,11 @@
       background:rgba(10,10,10,.85);
       border:1px solid rgba(255,0,0,.35);
     }
-    #contador{margin-bottom:15px;color:#ffd700}
+    #contador{
+      margin-bottom:15px;
+      font-size:15px;
+      color:#ffd700;
+    }
     button{
       padding:15px 28px;
       font-size:18px;
@@ -36,7 +40,10 @@
       margin-top:15px;
     }
     button:disabled{opacity:.5}
-    #resultado{margin-top:20px;font-size:18px}
+    #resultado{
+      margin-top:20px;
+      font-size:18px;
+    }
     .ok{color:#00ff77}
     .no{color:#ff3b3b}
     #actualizar{
@@ -95,7 +102,7 @@ const actualizar = document.getElementById("actualizar");
 const whats = document.getElementById("whats");
 const leyenda = document.getElementById("leyenda");
 
-function formatFecha(iso){
+function formatearFecha(iso){
   const d = new Date(iso);
   const p = n => String(n).padStart(2,"0");
   return `${p(d.getDate())}/${p(d.getMonth()+1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
@@ -108,32 +115,40 @@ jugarBtn.addEventListener("click", async () => {
   try {
     const r = await fetch("/api/jugar",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({ deviceId: getDeviceId() })
     });
     const data = await r.json();
 
+    // 🚫 BLOQUEADO
     if(!data.ok){
-      resultado.className="no";
-      resultado.innerText = data.mensaje;
+      resultado.className = "no";
+      resultado.innerText = "🚫 Ya usaste los intentos de hoy.";
+
       if(data.proximoIntento){
-        contador.innerHTML = `⏱️ Volvé el <b>${formatFecha(data.proximoIntento)}</b>`;
+        contador.innerHTML =
+          `⏱️ Podés volver a intentar el <b>${formatearFecha(data.proximoIntento)}</b>`;
       }
+
       return;
     }
 
-    contador.innerHTML = `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
+    // JUGADA NORMAL
+    contador.innerHTML =
+      `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
 
     resultado.className = data.ganador ? "ok" : "no";
-    resultado.innerHTML = data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
+    resultado.innerHTML =
+      data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
 
     if(data.ganador){
       whats.style.display="inline-block";
       leyenda.style.display="block";
-      whats.onclick=()=>window.open(
-        "https://wa.me/5491155632400?text=Hola%20gané%20un%20premio.%20Jugada%20"+data.id,
-        "_blank"
-      );
+      whats.onclick = () =>
+        window.open(
+          "https://wa.me/5491155632400?text=Hola%20gané%20un%20premio.%20Jugada%20"+data.id,
+          "_blank"
+        );
     }
 
     if(data.intentosRestantes > 0){
@@ -141,7 +156,8 @@ jugarBtn.addEventListener("click", async () => {
     }
 
   } catch {
-    resultado.innerText="❌ Error de conexión";
+    resultado.className = "no";
+    resultado.innerText = "❌ Error de conexión.";
   }
 });
 </script>

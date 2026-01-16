@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SORTEO AUTOMÁTICO</title>
+  <title>SORTEO PRO (BACKEND)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
 
@@ -27,55 +27,43 @@
       font-size: 14px;
       color: #ffb3b3;
       letter-spacing: 1px;
-      text-shadow: 0 0 6px rgba(255,0,0,0.35);
     }
     #contenedor {
       margin: 90px auto 40px;
       max-width: 420px;
       padding: 34px 30px;
       border-radius: 22px;
-      background: rgba(10, 10, 10, 0.85);
-      box-shadow: 0 0 25px rgba(255,0,0,0.25), inset 0 0 20px rgba(255,0,0,0.15);
-      border: 1px solid rgba(255,0,0,0.35);
+      background: rgba(10,10,10,.85);
+      box-shadow: 0 0 25px rgba(255,0,0,.25);
+      border: 1px solid rgba(255,0,0,.35);
     }
     button {
       margin-top: 22px;
       padding: 16px 30px;
       font-size: 18px;
-      background: linear-gradient(180deg, #444, #1a1a1a);
+      background: linear-gradient(180deg,#444,#1a1a1a);
       border: 1px solid #ff1a1a;
       color: #fff;
       border-radius: 999px;
       cursor: pointer;
-      box-shadow: 0 0 12px rgba(255,0,0,0.35);
     }
     button:disabled {
       background: #222;
-      border-color: #555;
       color: #777;
       cursor: not-allowed;
-      box-shadow: none;
     }
     #resultado {
       margin-top: 24px;
       font-size: 18px;
       min-height: 28px;
     }
-    .resultado-exito { color:#00ff77 }
-    .resultado-sinpremio { color:#ff3b3b }
-
-    #botonRecargar {
-      margin-top: 20px;
-      padding: 12px 26px;
-      font-size: 16px;
-      background: transparent;
-      color: #ff1a1a;
-      border: 2px solid #ff1a1a;
-      border-radius: 999px;
-      cursor: pointer;
-      display: none;
+    .ok { color:#00ff77 }
+    .no { color:#ff3b3b }
+    .id-jugada {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #ffd700;
     }
-
     #botonWhats {
       margin-top: 20px;
       padding: 14px 26px;
@@ -86,23 +74,15 @@
       border-radius: 999px;
       cursor: pointer;
       display: none;
-      box-shadow: 0 0 12px rgba(0,255,120,0.6);
-    }
-
-    .id-jugada {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #ffd700;
-      word-break: break-all;
     }
   </style>
 </head>
 
 <body>
 
-<h1>SORTEO AUTOMÁTICO</h1>
+<h1>SORTEO PRO</h1>
 <div class="subtitulo">
-  TOCÁ EL BOTÓN Y MIRÁ SI TENÉS PREMIO
+  SISTEMA CON BACKEND – CONTROL REAL
 </div>
 
 <div id="contenedor">
@@ -111,58 +91,47 @@
   <div id="resultado"></div>
 
   <button id="botonWhats">📲 RECLAMAR PREMIO</button>
-
-  <button id="botonRecargar" onclick="location.reload()">👉 SALIR</button>
 </div>
 
 <script>
-(function(){
-var k="jugada_realizada";
-if(localStorage.getItem(k)){
-  document.getElementById("resultado").innerHTML="🚫 YA PARTICIPASTE EN ESTE DISPOSITIVO";
-  document.getElementById("botonTirar").disabled=true;
-  document.getElementById("botonRecargar").style.display="inline-block";
-  return;
-}
+  const boton = document.getElementById("botonTirar");
+  const resultado = document.getElementById("resultado");
+  const botonWhats = document.getElementById("botonWhats");
 
-var r=[
- {t:"❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA",c:"resultado-sinpremio",p:80,w:false},
- {t:"🎁 GANASTE 100 FICHAS",c:"resultado-exito",p:15,w:true},
- {t:"🎉 GANASTE 300 FICHAS",c:"resultado-exito",p:5,w:true}
-];
+  boton.addEventListener("click", async () => {
+    boton.disabled = true;
+    resultado.innerText = "⏳ Procesando...";
 
-function id(){return"RB-"+Date.now().toString().slice(-6);}
-function pick(){
- var x=Math.random()*100,a=0;
- for(var i=0;i<r.length;i++){
-  a+=r[i].p;
-  if(x<a)return r[i];
- }
-}
+    try {
+      const res = await fetch("/api/jugar", { method: "POST" });
+      const data = await res.json();
 
-var b=document.getElementById("botonTirar"),
-res=document.getElementById("resultado"),
-w=document.getElementById("botonWhats"),
-rec=document.getElementById("botonRecargar");
+      if (!data.ok) {
+        resultado.className = "no";
+        resultado.innerText = data.mensaje || "❌ No podés jugar.";
+        return;
+      }
 
-b.addEventListener("click",function(){
- var o=pick(),i=id();
- localStorage.setItem(k,"1");
+      resultado.className = data.ganador ? "ok" : "no";
+      resultado.innerHTML =
+        data.premio +
+        `<div class="id-jugada">🆔 Jugada: <b>${data.id}</b></div>`;
 
- res.className=o.c;
- res.innerHTML=o.t+'<div class="id-jugada">🆔 Jugada: <b>'+i+'</b></div>';
+      if (data.ganador) {
+        botonWhats.style.display = "inline-block";
+        botonWhats.onclick = () => {
+          window.open(
+            "https://wa.me/5491155632400?text=Hola%20gan%C3%A9%20un%20premio.%20Jugada%20" + data.id,
+            "_blank"
+          );
+        };
+      }
 
- if(o.w){
-  w.style.display="inline-block";
-  w.onclick=function(){
-    window.open("https://wa.me/5491155632400?text=Hola%20gan%C3%A9%20un%20premio.%20Jugada%20"+i,"_blank");
-  };
- }
-
- b.disabled=true;
- rec.style.display="inline-block";
-});
-})();
+    } catch (e) {
+      resultado.className = "no";
+      resultado.innerText = "❌ Error de conexión.";
+    }
+  });
 </script>
 
 </body>

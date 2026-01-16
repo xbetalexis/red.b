@@ -39,10 +39,7 @@
       cursor:pointer;
       margin-top:15px;
     }
-    button:disabled{
-      opacity:.5;
-      cursor:not-allowed;
-    }
+    button:disabled{opacity:.5}
     #resultado{margin-top:20px;font-size:18px}
     .ok{color:#00ff77}
     .no{color:#ff3b3b}
@@ -93,6 +90,12 @@ const actualizar = document.getElementById("actualizar");
 const whats = document.getElementById("whats");
 const leyenda = document.getElementById("leyenda");
 
+function formatearFecha(iso){
+  const d = new Date(iso);
+  const pad = n => String(n).padStart(2,"0");
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 jugarBtn.addEventListener("click", async () => {
   jugarBtn.disabled = true;
   resultado.innerText = "⏳ Procesando...";
@@ -101,17 +104,23 @@ jugarBtn.addEventListener("click", async () => {
     const r = await fetch("/api/jugar",{method:"POST"});
     const data = await r.json();
 
+    // 🚫 Bloqueado
     if(!data.ok){
       resultado.className="no";
-      resultado.innerText=data.mensaje;
-      contador.innerHTML="⏱️ Volvé a intentar luego de 24hs";
+      resultado.innerText = data.mensaje;
+      if(data.proximoIntento){
+        contador.innerHTML =
+          `⏱️ Podés volver a intentar el <b>${formatearFecha(data.proximoIntento)}</b>`;
+      }
       return;
     }
 
-    contador.innerHTML = `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
+    contador.innerHTML =
+      `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
 
     resultado.className = data.ganador ? "ok" : "no";
-    resultado.innerHTML = data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
+    resultado.innerHTML =
+      data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
 
     if(data.ganador){
       whats.style.display="inline-block";

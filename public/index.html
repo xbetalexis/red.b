@@ -16,14 +16,12 @@
       margin: 0;
       padding: 0;
     }
-
     h1 {
       font-size: 40px;
       color: #ff1a1a;
       margin-top: 30px;
       text-shadow: 0 0 6px rgba(255,0,0,0.6),0 0 14px rgba(255,0,0,0.6);
     }
-
     .subtitulo {
       margin-top: 8px;
       font-size: 14px;
@@ -31,7 +29,6 @@
       letter-spacing: 1px;
       text-shadow: 0 0 6px rgba(255,0,0,0.35);
     }
-
     #contenedor {
       margin: 90px auto 40px;
       max-width: 420px;
@@ -41,7 +38,6 @@
       box-shadow: 0 0 25px rgba(255,0,0,0.25), inset 0 0 20px rgba(255,0,0,0.15);
       border: 1px solid rgba(255,0,0,0.35);
     }
-
     input {
       padding: 14px;
       width: 85%;
@@ -52,7 +48,6 @@
       color: #eee;
       text-align: center;
     }
-
     button {
       margin-top: 22px;
       padding: 16px 30px;
@@ -64,7 +59,6 @@
       cursor: pointer;
       box-shadow: 0 0 12px rgba(255,0,0,0.35);
     }
-
     button:disabled {
       background: #222;
       border-color: #555;
@@ -72,16 +66,13 @@
       cursor: not-allowed;
       box-shadow: none;
     }
-
     #resultado {
       margin-top: 24px;
       font-size: 18px;
       min-height: 28px;
     }
-
     .resultado-exito { color:#00ff77 }
     .resultado-sinpremio { color:#ff3b3b }
-
     #botonRecargar {
       margin-top: 30px;
       padding: 12px 26px;
@@ -94,7 +85,6 @@
       display: none;
       box-shadow: 0 0 10px rgba(255,0,0,0.4);
     }
-
     .id-jugada {
       margin-top: 10px;
       font-size: 13px;
@@ -115,51 +105,22 @@
   <input type="text" placeholder="Campo decorativo" disabled />
   <br/>
   <button id="botonTirar">🎰 PROBAR SUERTE</button>
-
   <div id="resultado"></div>
-
-  <button id="botonRecargar" onclick="location.reload()">
-    👉 Volver a intentar
-  </button>
+  <button id="botonRecargar" onclick="location.reload()">👉 Volver a intentar</button>
 </div>
 
 <script>
-  // 🔹 RESULTADOS AUTOMÁTICOS (AJUSTÁ ACÁ)
-  const resultados = [
-    { texto: "❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA", clase: "resultado-sinpremio", prob: 80 },
-    { texto: "🎁 GANASTE 100 FICHAS", clase: "resultado-exito", prob: 15 },
-    { texto: "🎉 GANASTE 300 FICHAS", clase: "resultado-exito", prob: 5 }
-  ];
-
-  function generarID() {
-    const f = new Date();
-    return "RB-" + f.getTime().toString().slice(-6);
-  }
-
-  function elegirResultado() {
-    let r = Math.random() * 100;
-    let acc = 0;
-    for (let item of resultados) {
-      acc += item.prob;
-      if (r < acc) return item;
-    }
-  }
-
-  const boton = document.getElementById("botonTirar");
-  const resultadoDiv = document.getElementById("resultado");
-  const recargar = document.getElementById("botonRecargar");
-
-  boton.addEventListener("click", () => {
-    const res = elegirResultado();
-    const id = generarID();
-
-    resultadoDiv.className = res.clase;
-    resultadoDiv.innerHTML =
-      res.texto + `<div class="id-jugada">🆔 Jugada: <b>${id}</b></div>`;
-
-    boton.disabled = true;
-    recargar.style.display = "inline-block";
-  });
+(function(_0x3a9f,_0x1c2e){var _0x4d87=function(_0x5e41){while(--_0x5e41){_0x3a9f['push'](_0x3a9f['shift']());}};_0x4d87(++_0x1c2e);}(_0x5b6e,0x1a3));
+var _0x7a4c=function(_0x2d9e,_0x4f6a){_0x2d9e=_0x2d9e-0x0;var _0x3c1d=_0x5b6e[_0x2d9e];return _0x3c1d;};
+var _0x5b6e=['resultado','innerHTML','botonTirar','botonRecargar','display','inline-block','disabled','click','addEventListener','Math','random','length','prob','texto','clase','resultado-exito','resultado-sinpremio','RB-'];
+(function(){var _0xres=[{texto:'❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA',clase:'resultado-sinpremio',prob:80},{texto:'🎁 GANASTE 100 FICHAS',clase:'resultado-exito',prob:15},{texto:'🎉 GANASTE 300 FICHAS',clase:'resultado-exito',prob:5}];
+function _0xpick(){var _0xr=Math[_0x7a4c('0xa')]()*100,_0xa=0;for(var i=0;i<_0xres[_0x7a4c('0xb')];i++){_0xa+=_0xres[i][_0x7a4c('0xc')];if(_0xr<_0xa)return _0xres[i];}}
+var _0xb=document.getElementById(_0x7a4c('0x2')), _0xr=document.getElementById(_0x7a4c('0x0')), _0xrc=document.getElementById(_0x7a4c('0x3'));
+_0xb[_0x7a4c('0x9')](_0x7a4c('0x8'),function(){var _0xo=_0xpick(),_0xid=_0x7a4c('0x10')+Date.now().toString().slice(-6);
+_0xr.className=_0xo[_0x7a4c('0xf')];
+_0xr[_0x7a4c('0x1')]=_0xo[_0x7a4c('0xd')]+'<div class="id-jugada">🆔 Jugada: <b>'+_0xid+'</b></div>';
+_0xb[_0x7a4c('0x7')]=true;
+_0xrc.style[_0x7a4c('0x4')]=_0x7a4c('0x5');});})();
 </script>
 
 </body>

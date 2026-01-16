@@ -22,11 +22,6 @@
       font-size:46px;
       letter-spacing:3px;
       color:#ff1a1a;
-      text-shadow:
-        0 2px 0 #9b0000,
-        0 4px 0 #6b0000,
-        0 6px 10px rgba(0,0,0,0.8),
-        0 0 18px rgba(255,0,0,0.7);
     }
     #contenedor{
       margin:70px auto 25px;
@@ -35,9 +30,6 @@
       border-radius:24px;
       background:rgba(10,10,10,.85);
       border:1px solid rgba(255,0,0,.35);
-      box-shadow:
-        0 0 30px rgba(255,0,0,.25),
-        inset 0 0 25px rgba(255,0,0,.15);
     }
     #contador{
       font-size:16px;
@@ -56,7 +48,7 @@
       margin-top:18px;
     }
     button:disabled{
-      opacity:.6;
+      opacity:.5;
       cursor:not-allowed;
     }
     #resultado{
@@ -78,22 +70,6 @@
       background:transparent;
       border:2px solid #ff1a1a;
     }
-
-    #info-clientes{
-      max-width:430px;
-      margin:0 auto;
-      padding:18px 24px;
-      font-size:13px;
-      line-height:1.6;
-      color:#d0b060;
-      opacity:.85;
-    }
-    #info-clientes span{
-      display:block;
-      margin-bottom:6px;
-      font-weight:600;
-      color:#ffd700;
-    }
   </style>
 </head>
 
@@ -104,18 +80,13 @@
 <div id="contenedor">
   <div id="contador">Tenés <b>3</b> intentos disponibles</div>
 
+  <!-- BOTÓN PRINCIPAL -->
   <button id="jugar">🎰 PROBAR SUERTE</button>
 
   <div id="resultado"></div>
 
-  <button id="actualizar" onclick="location.reload()">🔄 Probar otra vez</button>
-</div>
-
-<div id="info-clientes">
-  <span>Información para clientes</span>
-  Este sistema de sorteos es un beneficio adicional para clientes activos.<br>
-  Los premios pueden variar y están sujetos a disponibilidad.<br>
-  Cada intento queda registrado automáticamente.
+  <!-- BOTÓN SECUNDARIO -->
+  <button id="actualizar" onclick="location.reload()">🔄 PROBAR OTRA VEZ</button>
 </div>
 
 <script>
@@ -129,9 +100,9 @@ function getDeviceId(){
 }
 
 const jugarBtn   = document.getElementById("jugar");
+const actualizar = document.getElementById("actualizar");
 const resultado  = document.getElementById("resultado");
 const contador   = document.getElementById("contador");
-const actualizar = document.getElementById("actualizar");
 
 function formatearFecha(iso){
   const d = new Date(iso);
@@ -140,11 +111,11 @@ function formatearFecha(iso){
 }
 
 jugarBtn.addEventListener("click", async () => {
+  // 🔒 Apenas toca jugar: bloquear botón principal
   jugarBtn.disabled = true;
 
-  resultado.innerHTML = "";
-  resultado.className = "";
-  actualizar.style.display="none";
+  resultado.innerHTML = "⏳ Procesando...";
+  actualizar.style.display = "none";
 
   const r = await fetch("/api/jugar",{
     method:"POST",
@@ -155,9 +126,9 @@ jugarBtn.addEventListener("click", async () => {
 
   /* 🚫 SIN INTENTOS */
   if(!data.ok){
-    jugarBtn.style.display="none";
-    resultado.className="no";
-    resultado.innerText="🚫 Ya usaste tus 3 intentos.";
+    jugarBtn.style.display = "none";
+    resultado.className = "no";
+    resultado.innerText = "🚫 Ya usaste tus 3 intentos.";
 
     if(data.proximoIntento){
       contador.innerHTML =
@@ -166,30 +137,22 @@ jugarBtn.addEventListener("click", async () => {
     return;
   }
 
-  /* 🎰 JUGADA NORMAL */
+  /* 🎰 RESULTADO */
   contador.innerHTML =
     `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
 
-  // 🔹 SIN PREMIO (CORRECTO)
-  if(!data.ganador){
-    resultado.className="no";
-    resultado.innerHTML = `
-      ❌ SIN PREMIO
-      <div class="id-jugada">🆔 Código de referencia: <b>${data.id}</b></div>
-    `;
-  } else {
-    resultado.className="ok";
-    resultado.innerHTML = `
-      🎉 ${data.premio}
-      <div class="id-jugada">🆔 Código de referencia: <b>${data.id}</b></div>
-    `;
-  }
+  resultado.className = data.ganador ? "ok" : "no";
+  resultado.innerHTML = `
+    ${data.ganador ? "🎉 " + data.premio : "❌ SIN PREMIO"}
+    <div class="id-jugada">🆔 Código de referencia: <b>${data.id}</b></div>
+  `;
 
+  // ❌ ocultar jugar
+  jugarBtn.style.display = "none";
+
+  // ✅ mostrar SOLO probar otra vez si quedan intentos
   if(data.intentosRestantes > 0){
-    actualizar.style.display="inline-block";
-    jugarBtn.disabled=false;
-  } else {
-    jugarBtn.style.display="none";
+    actualizar.style.display = "inline-block";
   }
 });
 </script>

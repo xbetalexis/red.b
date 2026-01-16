@@ -38,16 +38,6 @@
       box-shadow: 0 0 25px rgba(255,0,0,0.25), inset 0 0 20px rgba(255,0,0,0.15);
       border: 1px solid rgba(255,0,0,0.35);
     }
-    input {
-      padding: 14px;
-      width: 85%;
-      font-size: 16px;
-      border-radius: 12px;
-      border: 1px solid #444;
-      background: #111;
-      color: #eee;
-      text-align: center;
-    }
     button {
       margin-top: 22px;
       padding: 16px 30px;
@@ -73,8 +63,9 @@
     }
     .resultado-exito { color:#00ff77 }
     .resultado-sinpremio { color:#ff3b3b }
+
     #botonRecargar {
-      margin-top: 30px;
+      margin-top: 20px;
       padding: 12px 26px;
       font-size: 16px;
       background: transparent;
@@ -83,8 +74,21 @@
       border-radius: 999px;
       cursor: pointer;
       display: none;
-      box-shadow: 0 0 10px rgba(255,0,0,0.4);
     }
+
+    #botonWhats {
+      margin-top: 20px;
+      padding: 14px 26px;
+      font-size: 16px;
+      background: #00c853;
+      color: #000;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 0 12px rgba(0,255,120,0.6);
+    }
+
     .id-jugada {
       margin-top: 10px;
       font-size: 13px;
@@ -102,32 +106,61 @@
 </div>
 
 <div id="contenedor">
-  <input type="text" placeholder="Campo decorativo" disabled />
-  <br/>
   <button id="botonTirar">🎰 PROBAR SUERTE</button>
+
   <div id="resultado"></div>
-  <button id="botonRecargar" onclick="location.reload()">👉 Volver a intentar</button>
+
+  <button id="botonWhats">📲 RECLAMAR PREMIO</button>
+
+  <button id="botonRecargar" onclick="location.reload()">👉 SALIR</button>
 </div>
 
 <script>
 (function(){
-var _r=[{t:"❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA",c:"resultado-sinpremio",p:80},{t:"🎁 GANASTE 100 FICHAS",c:"resultado-exito",p:15},{t:"🎉 GANASTE 300 FICHAS",c:"resultado-exito",p:5}];
-function _id(){return"RB-"+Date.now().toString().slice(-6);}
-function _pick(){
-var x=Math.random()*100,a=0;
-for(var i=0;i<_r.length;i++){
-a+=_r[i].p;
-if(x<a)return _r[i];
-}}
+var k="jugada_realizada";
+if(localStorage.getItem(k)){
+  document.getElementById("resultado").innerHTML="🚫 YA PARTICIPASTE EN ESTE DISPOSITIVO";
+  document.getElementById("botonTirar").disabled=true;
+  document.getElementById("botonRecargar").style.display="inline-block";
+  return;
+}
+
+var r=[
+ {t:"❌ SIN PREMIO – PROBÁ EN TU PRÓXIMA CARGA",c:"resultado-sinpremio",p:80,w:false},
+ {t:"🎁 GANASTE 100 FICHAS",c:"resultado-exito",p:15,w:true},
+ {t:"🎉 GANASTE 300 FICHAS",c:"resultado-exito",p:5,w:true}
+];
+
+function id(){return"RB-"+Date.now().toString().slice(-6);}
+function pick(){
+ var x=Math.random()*100,a=0;
+ for(var i=0;i<r.length;i++){
+  a+=r[i].p;
+  if(x<a)return r[i];
+ }
+}
+
 var b=document.getElementById("botonTirar"),
-r=document.getElementById("resultado"),
-rc=document.getElementById("botonRecargar");
+res=document.getElementById("resultado"),
+w=document.getElementById("botonWhats"),
+rec=document.getElementById("botonRecargar");
+
 b.addEventListener("click",function(){
-var o=_pick(),i=_id();
-r.className=o.c;
-r.innerHTML=o.t+'<div class="id-jugada">🆔 Jugada: <b>'+i+'</b></div>';
-b.disabled=true;
-rc.style.display="inline-block";
+ var o=pick(),i=id();
+ localStorage.setItem(k,"1");
+
+ res.className=o.c;
+ res.innerHTML=o.t+'<div class="id-jugada">🆔 Jugada: <b>'+i+'</b></div>';
+
+ if(o.w){
+  w.style.display="inline-block";
+  w.onclick=function(){
+    window.open("https://wa.me/5491155632400?text=Hola%20gan%C3%A9%20un%20premio.%20Jugada%20"+i,"_blank");
+  };
+ }
+
+ b.disabled=true;
+ rec.style.display="inline-block";
 });
 })();
 </script>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SORTEO PRO</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
@@ -24,11 +24,7 @@
       background:rgba(10,10,10,.85);
       border:1px solid rgba(255,0,0,.35);
     }
-    #contador{
-      margin-bottom:15px;
-      font-size:15px;
-      color:#ffd700;
-    }
+    #contador{margin-bottom:15px;color:#ffd700}
     button{
       padding:15px 28px;
       font-size:18px;
@@ -83,6 +79,15 @@
 </div>
 
 <script>
+function getDeviceId(){
+  let id = localStorage.getItem("device_id");
+  if(!id){
+    id = crypto.randomUUID();
+    localStorage.setItem("device_id", id);
+  }
+  return id;
+}
+
 const jugarBtn = document.getElementById("jugar");
 const resultado = document.getElementById("resultado");
 const contador = document.getElementById("contador");
@@ -90,10 +95,10 @@ const actualizar = document.getElementById("actualizar");
 const whats = document.getElementById("whats");
 const leyenda = document.getElementById("leyenda");
 
-function formatearFecha(iso){
+function formatFecha(iso){
   const d = new Date(iso);
-  const pad = n => String(n).padStart(2,"0");
-  return `${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const p = n => String(n).padStart(2,"0");
+  return `${p(d.getDate())}/${p(d.getMonth()+1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 jugarBtn.addEventListener("click", async () => {
@@ -101,26 +106,26 @@ jugarBtn.addEventListener("click", async () => {
   resultado.innerText = "⏳ Procesando...";
 
   try {
-    const r = await fetch("/api/jugar",{method:"POST"});
+    const r = await fetch("/api/jugar",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ deviceId: getDeviceId() })
+    });
     const data = await r.json();
 
-    // 🚫 Bloqueado
     if(!data.ok){
       resultado.className="no";
       resultado.innerText = data.mensaje;
       if(data.proximoIntento){
-        contador.innerHTML =
-          `⏱️ Podés volver a intentar el <b>${formatearFecha(data.proximoIntento)}</b>`;
+        contador.innerHTML = `⏱️ Volvé el <b>${formatFecha(data.proximoIntento)}</b>`;
       }
       return;
     }
 
-    contador.innerHTML =
-      `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
+    contador.innerHTML = `Tenés <b>${data.intentosRestantes}</b> intentos disponibles`;
 
     resultado.className = data.ganador ? "ok" : "no";
-    resultado.innerHTML =
-      data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
+    resultado.innerHTML = data.premio + `<div class="id-jugada">🆔 ${data.id}</div>`;
 
     if(data.ganador){
       whats.style.display="inline-block";
